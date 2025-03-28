@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import Axios from 'axios'
+import PersonsServer from './services/persons.js'
 
 const TextInput = ({textLabel, textId, inputText, onKeystroke, inputType}) => {
 	return (
@@ -41,8 +41,14 @@ const SearchField = ({searchText, onSearchKeystroke}) =>
 		inputType='text' 
 	/>;
 
-const Entry = ({entry}) => <p>{entry.name} {entry.number}</p>;
-const Numbers = ({persons}) => <>{persons.map(person => <Entry key={person.name} entry={person} />)}</>
+const EntryText = ({entry}) => <>{entry.name} {entry.number}</>;
+const Entry = ({entry, onDeletion}) => 
+	<div>
+		<EntryText entry={entry} />
+		<button onClick={onDeletion}>delete</button>
+	</div>
+
+const Numbers = ({persons, onDeletion}) => <>{persons.map(person => <Entry key={person.id} entry={person} onDeletion={onDeletion(person.id)}/>)}</>
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
@@ -51,10 +57,11 @@ const App = () => {
 	const [newSearch, setNewSearch] = useState('');
 
 	useEffect(() => {
-		Axios
-			.get("http://localhost:3001/persons")
-			.then((response) => {
-				setPersons(response.data);
+		PersonsServer
+			.fetch()
+			.then((persons) => {
+				console.log('GET', persons, 'fulfilled');
+				setPersons(persons);
 			})
 	}, []);
 
@@ -66,11 +73,6 @@ const App = () => {
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		if (newName === '' || newNumber === '') return;
-		else if (persons.find((person) => person.name.toUpperCase() === newName.toUpperCase()))
-		{
-			alert(`${newName} is already in the phonebook`);
-			return;
-		}
 		else if (/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(newNumber) !== true)
 		{
 			alert("Number must be of the form: XXX-XXX-XXXX");
@@ -81,20 +83,53 @@ const App = () => {
 			name: newName,
 			number: newNumber
 		};
+		const personWithSameNewName = persons.find((person) => person.name.toUpperCase() === newName.toUpperCase());
 
-		Axios
-			.post("http://localhost:3001/persons", newPerson)
-			.then((response) => {
-				console.log("POST success", response.status);
-			})
-			.catch((error) => {
-				alert("POST rejected", error.status);
-			});
+		addPerson:
+		if (personWithSameNewName != undefined)
+		{
+			if (!confirm(`"${newName}" is already in the phonebook, do you wish to modify their number?`)) break addPerson;
 
-		setPersons([...persons, newPerson]);
+			PersonsServer
+				.modifyPerson(personWithSameNewName.id, newPerson)
+				.then((newlyModifiedPerson) => {
+					console.log('PUT', newlyModifiedPerson, 'fulfilled');
+					setPersons(persons.map((person) => person.id === personWithSameNewName.id ? newlyModifiedPerson : person));
+				})
+				.catch((error) => {
+					alert("PUT rejected", error.status);
+				})
+		}
+		else
+		{
+			PersonsServer
+				.addPerson(newPerson)
+				.then((addedPerson) => {
+					console.log('POST', addedPerson, 'fulfilled');
+					setPersons([...persons, addedPerson]);
+				})
+				.catch((error) => {
+					alert("POST rejected", error.status);
+				});
+		}
+
 		setNewName('');
 		setNewNumber('');
 		setNewSearch('');
+	}
+	const handleDeletion = (id) => {
+		return () => {
+			if (!confirm(`Are you sure you want to delete "${persons.find((person) => person.id === id).name}"`)) return;
+			PersonsServer
+				.deletePerson(id)
+				.then((deletedPerson) => {
+					console.log('DELETE', deletedPerson, 'fulfilled')
+					setPersons(persons.filter((person) => person.id !== deletedPerson.id))
+				})
+				.catch((error) => {
+					alert("DELETE rejected", error.status);
+				});
+		}
 	}
 
 	const handleNameKeystroke = (event) => {
@@ -125,7 +160,7 @@ const App = () => {
 			/>
 
 			<h2>Numbers</h2>
-			<Numbers persons={personsToShow} />
+			<Numbers persons={personsToShow} onDeletion={handleDeletion}/>
 		</div>
 	);
 };
