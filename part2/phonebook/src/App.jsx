@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Axios from 'axios'
 
 const TextInput = ({textLabel, textId, inputText, onKeystroke, inputType}) => {
 	return (
@@ -44,12 +45,18 @@ const Entry = ({entry}) => <p>{entry.name} {entry.number}</p>;
 const Numbers = ({persons}) => <>{persons.map(person => <Entry key={person.name} entry={person} />)}</>
 
 const App = () => {
-	const [persons, setPersons] = useState([
-		{name: 'Arto Hellas', number:'999-999-9999'}
-	]);
+	const [persons, setPersons] = useState([]);
 	const [newName, setNewName] = useState('');
 	const [newNumber, setNewNumber] = useState('');
 	const [newSearch, setNewSearch] = useState('');
+
+	useEffect(() => {
+		Axios
+			.get("http://localhost:3001/persons")
+			.then((response) => {
+				setPersons(response.data);
+			})
+	}, []);
 
 	const regExpForSearch = new RegExp(`^${newSearch}`, 'i');
 	const personsToShow = newSearch !== ''
@@ -70,7 +77,21 @@ const App = () => {
 			return;
 		}
 
-		setPersons([...persons, {name: newName, number: newNumber}]);
+		const newPerson = {
+			name: newName,
+			number: newNumber
+		};
+
+		Axios
+			.post("http://localhost:3001/persons", newPerson)
+			.then((response) => {
+				console.log("POST success", response.status);
+			})
+			.catch((error) => {
+				alert("POST rejected", error.status);
+			});
+
+		setPersons([...persons, newPerson]);
 		setNewName('');
 		setNewNumber('');
 		setNewSearch('');
