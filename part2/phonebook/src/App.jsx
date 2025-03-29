@@ -1,60 +1,20 @@
 import { useState, useEffect } from 'react'
+
+import {PhonebookForm, SearchField} from './components/UserInput'
+import Numbers from './components/Numbers'
+import Notice from './components/Notice'
+
 import PersonsServer from './services/persons.js'
 
-const TextInput = ({textLabel, textId, inputText, onKeystroke, inputType}) => {
-	return (
-		<div>
-			<label htmlFor={textId}>{textLabel}: </label>
-			<input id={textId} type={inputType} value={inputText} onChange={onKeystroke} />
-		</div>
-	)
-}
-
-const PhonebookForm = ({nameText, numberText, onNameKeystroke, onNumberKeystroke, onSubmit}) => {
-	return (
-		<form onSubmit={onSubmit}>
-			<TextInput 
-				textLabel='Name' 
-				textId='name-field' 
-				inputText={nameText} 
-				onKeystroke={onNameKeystroke} 
-				inputType='text'
-			/>
-			<TextInput 
-				textLabel='Number'
-				textId='number-field'
-				inputText={numberText}
-				onKeystroke={onNumberKeystroke}
-				inputType='tel'
-			/>
-			<button type='submit'>add</button>
-		</form>
-	);
-}
-
-const SearchField = ({searchText, onSearchKeystroke}) => 
-	<TextInput 
-		textLabel='Filter' 
-		textId='search-field' 
-		inputText={searchText} 
-		onKeystroke={onSearchKeystroke} 
-		inputType='text' 
-	/>;
-
-const EntryText = ({entry}) => <>{entry.name} {entry.number}</>;
-const Entry = ({entry, onDeletion}) => 
-	<div>
-		<EntryText entry={entry} />
-		<button onClick={onDeletion}>delete</button>
-	</div>
-
-const Numbers = ({persons, onDeletion}) => <>{persons.map(person => <Entry key={person.id} entry={person} onDeletion={onDeletion(person.id)}/>)}</>
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
+
 	const [newName, setNewName] = useState('');
 	const [newNumber, setNewNumber] = useState('');
 	const [newSearch, setNewSearch] = useState('');
+
+	const [newNotice, setNewNotice] = useState();
 
 	useEffect(() => {
 		PersonsServer
@@ -65,6 +25,12 @@ const App = () => {
 			})
 	}, []);
 
+	useEffect(() => {
+		setTimeout(() => {
+			setNewNotice(undefined);
+		}, 5000)
+	}, [newNotice])
+
 	const regExpForSearch = new RegExp(`^${newSearch}`, 'i');
 	const personsToShow = newSearch !== ''
 		? persons.filter((person) => regExpForSearch.test(person.name))
@@ -72,6 +38,7 @@ const App = () => {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
+
 		if (newName === '' || newNumber === '') return;
 		else if (/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(newNumber) !== true)
 		{
@@ -93,11 +60,11 @@ const App = () => {
 			PersonsServer
 				.modifyPerson(personWithSameNewName.id, newPerson)
 				.then((newlyModifiedPerson) => {
-					console.log('PUT', newlyModifiedPerson, 'fulfilled');
+					setNewNotice({text: `Changed number of ${newName}`, type: 'success'});
 					setPersons(persons.map((person) => person.id === personWithSameNewName.id ? newlyModifiedPerson : person));
 				})
 				.catch((error) => {
-					alert("PUT rejected", error.status);
+					setNewNotice({text: `${newName} has already been removed from the server. Code: ${error.status}`, type: 'error'});
 				})
 		}
 		else
@@ -105,11 +72,11 @@ const App = () => {
 			PersonsServer
 				.addPerson(newPerson)
 				.then((addedPerson) => {
-					console.log('POST', addedPerson, 'fulfilled');
+					setNewNotice({text: `Added ${addedPerson.name}`, type: 'success'});
 					setPersons([...persons, addedPerson]);
 				})
 				.catch((error) => {
-					alert("POST rejected", error.status);
+					setNewNotice({text: `idk bro. Code: ${error.status}`, type: 'error'});
 				});
 		}
 
@@ -118,16 +85,17 @@ const App = () => {
 		setNewSearch('');
 	}
 	const handleDeletion = (id) => {
+		const nameOfPersonToDelete = persons.find((person) => person.id === id).name;
 		return () => {
-			if (!confirm(`Are you sure you want to delete "${persons.find((person) => person.id === id).name}"`)) return;
+			if (!confirm(`Are you sure you want to delete "${nameOfPersonToDelete}"`)) return;
 			PersonsServer
 				.deletePerson(id)
 				.then((deletedPerson) => {
-					console.log('DELETE', deletedPerson, 'fulfilled')
+					setNewNotice({text: `Deleted ${nameOfPersonToDelete}`, type: 'success'});
 					setPersons(persons.filter((person) => person.id !== deletedPerson.id))
 				})
 				.catch((error) => {
-					alert("DELETE rejected", error.status);
+					setNewNotice({text: `${nameOfPersonToDelete} was already deleted from the server. Code: ${error.status}`, type: 'error'});
 				});
 		}
 	}
@@ -145,6 +113,7 @@ const App = () => {
 	return (
 		<div>
 			<h1>Phonebook</h1>
+			<Notice notice={newNotice} />
 			<SearchField 
 				searchText={newSearch}
 				onSearchKeystroke={handleSearchKeystroke}
