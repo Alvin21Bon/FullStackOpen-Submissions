@@ -1,5 +1,15 @@
 import Express from 'express'
+import Morgan from 'morgan'
+
 const app = Express();
+app.use(Express.json());
+
+Morgan.token('postData', (req) => {
+	if (req.method === 'POST') return JSON.stringify(req.body);
+	else return '';
+});
+
+app.use(Morgan(':method :url :status :res[content-length] - :response-time ms :postData'));
 
 let persons = [
 	{
@@ -18,8 +28,6 @@ let persons = [
 		number: '123-123-1234'
 	},
 ];
-
-app.use(Express.json());
 
 app.get('/api/persons', (req, res) => {
 	console.log('GET /api/persons');
