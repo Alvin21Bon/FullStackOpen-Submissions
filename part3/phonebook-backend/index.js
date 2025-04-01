@@ -2,6 +2,7 @@ import Express from 'express'
 import Morgan from 'morgan'
 
 const app = Express();
+app.use(Express.static('dist'));
 app.use(Express.json());
 
 Morgan.token('postData', (req) => {
@@ -53,9 +54,11 @@ app.get('/api/persons/:id', (req, res) => {
 
 app.delete('/api/persons/:id', (req, res) => {
 	const id = req.params.id;
-	persons = persons.filter((person) => person.id !== id);
+	const personToDelete = persons.find((person) => person.id === id);
+	if (!personToDelete) res.status(404).json({error: 'person not found'});
 
-	res.status(204).end();
+	persons = persons.filter((person) => person.id !== id);
+	res.json(personToDelete)
 })
 
 app.post('/api/persons', (req, res) => {
