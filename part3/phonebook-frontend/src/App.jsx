@@ -39,13 +39,6 @@ const App = () => {
 	const handleSubmit = (event) => {
 		event.preventDefault();
 
-		if (newName === '' || newNumber === '') return;
-		else if (/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(newNumber) !== true)
-		{
-			alert("Number must be of the form: XXX-XXX-XXXX");
-			return;
-		}
-
 		const newPerson = {
 			name: newName,
 			number: newNumber
@@ -62,9 +55,13 @@ const App = () => {
 				.then((newlyModifiedPerson) => {
 					setNewNotice({text: `Changed number of ${newName}`, type: 'success'});
 					setPersons(persons.map((person) => person.id === personWithSameNewName.id ? newlyModifiedPerson : person));
+
+					setNewName('');
+					setNewNumber('');
+					setNewSearch('');
 				})
 				.catch((error) => {
-					setNewNotice({text: `${newName} has already been removed from the server. Code: ${error.status}`, type: 'error'});
+					setNewNotice({text: error.info.message, type: 'error'});
 				})
 		}
 		else
@@ -74,15 +71,16 @@ const App = () => {
 				.then((addedPerson) => {
 					setNewNotice({text: `Added ${addedPerson.name}`, type: 'success'});
 					setPersons([...persons, addedPerson]);
+
+					setNewName('');
+					setNewNumber('');
+					setNewSearch('');
 				})
 				.catch((error) => {
-					setNewNotice({text: `idk bro. Code: ${error.status}`, type: 'error'});
+					setNewNotice({text: error.info.message, type: 'error'});
 				});
 		}
 
-		setNewName('');
-		setNewNumber('');
-		setNewSearch('');
 	}
 	const handleDeletion = (id) => {
 		const nameOfPersonToDelete = persons.find((person) => person.id === id).name;
@@ -96,7 +94,7 @@ const App = () => {
 					setPersons(persons.filter((person) => person.id !== deletedPerson.id))
 				})
 				.catch((error) => {
-					setNewNotice({text: `${nameOfPersonToDelete} was already deleted from the server. Code: ${error.status}`, type: 'error'});
+					setNewNotice({text: error.info.message, type: 'error'});
 				});
 		}
 	}

@@ -43,7 +43,7 @@ App.put('/api/persons/:id', (req, res, next) => {
 	const newNumber = req.body.number;
 
 	Person
-		.findByIdAndUpdate(id, {$set: {number: newNumber}}, { new: true })
+		.findByIdAndUpdate(id, {$set: {number: newNumber}}, { new: true, runValidators: true })
 		.then((updatedPerson) => updatedPerson ? res.json(updatedPerson): res.status(404).json({error: `Person with id "${id}" not found`}))
 		.catch((error) => next(error));
 });
@@ -58,16 +58,9 @@ App.delete('/api/persons/:id', (req, res, next) => {
 })
 
 App.post('/api/persons', async (req, res, next) => {
-	const body = req.body;
-
-	if (!body.name || !body.number) return res.status(400).json({error: 'name and number must be defined'});
-
-	const personLookup = await Person.find({name: body.name}).exec();
-	if (personLookup.length > 0) return res.status(400).json({error: 'names must be unique'});
-
 	const newPerson = new Person({
-		name: body.name,
-		number: body.number
+		name: req.body.name,
+		number: req.body.number
 	});
 
 	newPerson
@@ -80,8 +73,26 @@ App.use((_req, res) => {
 	res.status(404).send('<h1>404 page not found</h1>');
 });
 
+App.use((error, _req, res, next) => {
+	switch (error.name)
+	{
+		case 'MongooseError':
+			res.status(500).json({error: 'Mongoose error', info: error});
+			break;
+		case 'CastError':
+			res.status(400).json({error: 'Malformed data', info: error});
+			break;
+		case 'ValidationError':
+			res.status(400).json({error: 'Failed validation rules', info: error});
+			break;
+		default:
+			next(error);
+			break;
+	}
+});
+
 App.use((error, _req, res, _next) => {
-	res.status(500).json({erorr: 'Failed database operation', info: error});
+	res.status(500).json({error: 'Internal server error', info: error});
 });
 
 export default App;

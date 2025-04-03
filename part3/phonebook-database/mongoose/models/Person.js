@@ -1,8 +1,21 @@
 import { Mongoose } from '../mongoose.js'
 
 const personSchema = Mongoose.Schema({
-	name: String,
-	number: String
+	name: {
+		type: String,
+		minLength: [3, 'Name must be at least 3 characters long'],
+		required: [true, 'Name field is required'],
+		unique: true
+	},
+	number: {
+		type: String,
+		required: [true, 'Number field is required'],
+		unique: true,
+		validate: {
+			validator: (number) => /\d{3}-\d{3}-\d{4}/.test(number),
+			message: 'Number must be of the form XXX-XXX-XXXX'
+		}
+	}
 });
 
 personSchema.set('toJSON', {

@@ -15,3 +15,32 @@ Content-Type: application/json
 	"name": "Testing Database",
 	"number": "123-123-1235"
 }
+
+###
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+	"name": "Testing",
+	"number": "13-123-1235"
+}
+
+###
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+	"name": "Testing"
+}
+
+###
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+	"name": "Te",
+	"number": "123-123-1234"
+}
