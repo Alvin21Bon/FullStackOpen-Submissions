@@ -1,0 +1,31 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Node 23",
+	"_version": "23.0.0",
+
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"incremental": true,
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
+
+		"target": "es2024",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"esModuleInterop": true,
+		"lib": ["es2024", "DOM"],
+		"skipLibCheck": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+	},
+
+	"include": ["src"],
+	"exclude": ["node_modules", "dist", "requests"],
+}

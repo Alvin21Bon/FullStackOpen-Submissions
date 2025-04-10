@@ -2,7 +2,6 @@ import Mongoose from 'mongoose'
 import Logger from './logger.js'
 import Env from './env.js'
 
-Mongoose.pluralize(null);
 Mongoose.set('strictQuery', true);
 
 const connectDB = async () => {

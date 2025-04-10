@@ -1,19 +1,27 @@
 {
   "name": "blog-list",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "license": "MIT",
   "author": "",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "node --watch index.js"
+    "build": "tsc",
+    "start": "tsc && node dist/index.js",
+    "dev": "nodemon --watch src --ext 'ts' --exec 'tsc && node dist/index.js'"
   },
   "dependencies": {
+    "@typegoose/typegoose": "^12.14.0",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "nodemon": "^3.1.9",
+    "typescript": "^5.8.3"
   }
 }
