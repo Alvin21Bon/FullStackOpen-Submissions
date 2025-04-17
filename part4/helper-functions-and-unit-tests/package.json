@@ -1,0 +1,17 @@
+{
+  "name": "helper-functions-and-unit-tests",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}
