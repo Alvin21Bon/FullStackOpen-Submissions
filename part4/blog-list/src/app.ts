@@ -1,9 +1,6 @@
 import Express from 'express'
 import blogsRouter from './routers/blogs-router.js'
 import Middlewares from './utils/middlewares.js'
-import { connectDB } from './utils/mongoose.js'
-
-connectDB();
 
 const App = Express();
 

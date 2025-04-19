@@ -17,6 +17,7 @@
 		"skipLibCheck": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
+		"resolveJsonModule": true,
 
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
@@ -27,5 +28,5 @@
 	},
 
 	"include": ["src"],
-	"exclude": ["node_modules", "dist", "requests"],
+	"exclude": ["node_modules", "dist", "requests", "**/__tests__*"],
 }

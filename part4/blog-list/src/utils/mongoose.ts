@@ -5,16 +5,19 @@ import Env from './env.js'
 Mongoose.set('strictQuery', true);
 
 const connectDB = async () => {
+	if (Mongoose.connection.readyState === 1) return;
+
 	Logger.info(`Connecting to database ${Env.MONGODB_URI}...`);
-	Mongoose
-		.connect(Env.MONGODB_URI)
-		.then(() => Logger.info('Connection to database established'))
-		.catch((error) => {
-			Logger.error('Failed to connect to database:');
-			Logger.error(error);
-			Logger.error('Terminating...');
-			process.exit(1);
-		});
+	try {
+		await Mongoose.connect(Env.MONGODB_URI);
+		Logger.info('Connection to database established');
+	}
+	catch (err) {
+		Logger.error('Failed to connect to database:');
+		Logger.error(err);
+		Logger.error('Terminating...');
+		process.exit(1);
+	}
 }
 
 export {Mongoose, connectDB};
