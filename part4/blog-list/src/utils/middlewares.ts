@@ -15,8 +15,8 @@ const unknownEndpoint:RequestHandler = (_req, res) => {
 	res.status(404).send('<h1>404 page not found</h1>');
 }
 
-const errorRouter = Router();
-errorRouter.use(((err, _req, _res, next) => {
+const errorMiddlewares:ErrorRequestHandler[] = [];
+errorMiddlewares.push(((err, _req, _res, next) => {
 	Logger.error('---------');
 	Logger.error('ERROR:');
 	Logger.error(err);
@@ -25,7 +25,7 @@ errorRouter.use(((err, _req, _res, next) => {
 }) as ErrorRequestHandler);
 
 // Mongoose
-errorRouter.use(((err:unknown, _req, res, next) => {
+errorMiddlewares.push(((err:unknown, _req, res, next) => {
 	if (!(err instanceof Error))
 	{
 		next(err);
@@ -52,8 +52,8 @@ errorRouter.use(((err:unknown, _req, res, next) => {
 }) as ErrorRequestHandler);
 
 // unknwon error
-errorRouter.use(((err, _req, res, _next) => {
+errorMiddlewares.push(((err, _req, res, _next) => {
 	res.status(500).json(err);
 }) as ErrorRequestHandler);
 
-export default {requestLogger, unknownEndpoint, errorRouter};
+export default {requestLogger, unknownEndpoint, errorMiddlewares};

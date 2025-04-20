@@ -10,6 +10,6 @@ App.use(Middlewares.requestLogger);
 App.use('/api/blogs', blogsRouter);
 
 App.use(Middlewares.unknownEndpoint);
-App.use(Middlewares.errorRouter);
+App.use(Middlewares.errorMiddlewares);
 
 export default App;
