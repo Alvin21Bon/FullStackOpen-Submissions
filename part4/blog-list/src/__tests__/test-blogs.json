@@ -1,0 +1,19 @@
+{
+	"noLikes": {
+		"title": "blog with no likes",
+		"author": "test no likes author",
+		"url": "www.testingnolikes.com"
+	},
+	
+	"noTitle": {
+		"author": "test no title author",
+		"url": "www.testingnourl.com",
+		"likes": 11
+	},
+
+	"noURL": {
+		"title": "blog with no url",
+		"author": "test no url author",
+		"likes": 11
+	}
+}

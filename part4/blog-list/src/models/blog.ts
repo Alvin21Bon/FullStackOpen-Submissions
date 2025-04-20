@@ -14,10 +14,26 @@ import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 })
 class BlogSchema
 {
-	@prop() title!: string;
-	@prop() author!: string;
-	@prop() url!: string;
-	@prop() likes!: number;
+	@prop({
+		required: true,
+	}) 
+	title!: string;
+
+	@prop({
+		required: true,
+	}) 
+	author!: string;
+
+	@prop({
+		required: true,
+	}) 
+	url!: string;
+
+	@prop({
+		required: true,
+		default: 0
+	}) 
+	likes!: number;
 }
 
 const Blog = getModelForClass(BlogSchema);
