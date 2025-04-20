@@ -15,5 +15,12 @@
 		"title": "blog with no url",
 		"author": "test no url author",
 		"likes": 11
+	},
+
+	"normal": {
+		"title": "normal test blog",
+		"author": "normal test author",
+		"url": "www.normalurl.com",
+		"likes": 11
 	}
 }
