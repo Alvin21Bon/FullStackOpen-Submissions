@@ -13,6 +13,7 @@
     "dev": "nodemon --watch src --ext 'ts' --exec 'tsc && node dist/index.js'"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
     "mongoose": "^8.13.2"
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@swc/core": "^1.11.21",
     "@typegoose/typegoose": "^12.14.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.0",
     "@types/supertest": "^6.0.3",

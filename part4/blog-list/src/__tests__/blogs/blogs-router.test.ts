@@ -1,29 +1,10 @@
-import { beforeEach, test, expect, beforeAll } from 'vitest'
+import { test, expect } from 'vitest'
 import Supertest from 'supertest'
-import App from '../app.js'
-import Blog from '../models/blog.js'
-import { Mongoose, connectDB } from '../utils/mongoose.js'
+import App from '../../app.js'
+import Blog from '../../models/blog.js'
 
 import testInitialBlogs from './test-initial-blogs.json' 
 import testBlogs from './test-blogs.json'
-
-beforeAll(async () => {
-	try {
-		await connectDB();
-	}
-	catch (err) {
-		throw(err);
-	}
-})
-
-beforeEach(async () => {
-	try {
-		await Mongoose.connection.db!.dropDatabase();
-	}
-	catch (err) {
-		throw(err);
-	}
-});
 
 test('GET should match length of test initial blogs', async () => {
 	try {
