@@ -1,5 +1,5 @@
 import Logger from './logger.js'
-import { Router } from 'express'
+import { Mongoose } from './mongoose.js'
 import type { RequestHandler, ErrorRequestHandler } from 'express'
 
 const requestLogger:RequestHandler = (req, _res, next) => {
@@ -26,7 +26,7 @@ errorMiddlewares.push(((err, _req, _res, next) => {
 
 // Mongoose
 errorMiddlewares.push(((err:unknown, _req, res, next) => {
-	if (!(err instanceof Error))
+	if (!(err instanceof Mongoose.MongooseError))
 	{
 		next(err);
 		return;
@@ -42,6 +42,27 @@ errorMiddlewares.push(((err:unknown, _req, res, next) => {
 			break;
 		case 'ValidationError':
 			res.status(400)
+			break;
+		default:
+			next(err);
+			return;
+	}
+
+	res.json(err);
+}) as ErrorRequestHandler);
+
+// MongoDB
+errorMiddlewares.push(((err:unknown, _req, res, next) => {
+	if (!(err instanceof Mongoose.mongo.MongoError))
+	{
+		next(err);
+		return;
+	}
+
+	switch (err.code)
+	{
+		case 11000: // DUPLICATE KEY
+			res.status(409);
 			break;
 		default:
 			next(err);

@@ -1,0 +1,29 @@
+{
+	"noUsername": {
+		"password": "test-noUsername-password",
+		"name": "test-noUsername-name"
+	},
+
+	"noPassword": {
+		"username": "test-noPassword-username",
+		"name": "test-noPassword-name"
+	},
+
+	"lessThanMinLengthUsername": {
+		"username": "ab",
+		"password": "test-minLengthUsername-password",
+		"name": "test-minLengthUsername-name"
+	},
+
+	"lessThanMinLengthPassword": {
+		"username": "test-minLengthPassword-username",
+		"password": "a",
+		"name": "test-minLengthPassword-name"
+	},
+
+	"normal": {
+		"username": "test-normal-username",
+		"password": "test-normal-password",
+		"name": "test-normal-name"
+	}
+}

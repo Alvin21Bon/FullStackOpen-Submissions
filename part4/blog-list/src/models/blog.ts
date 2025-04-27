@@ -36,5 +36,4 @@ class BlogSchema
 	likes!: number;
 }
 
-const Blog = getModelForClass(BlogSchema);
-export default Blog;
+export default getModelForClass(BlogSchema);

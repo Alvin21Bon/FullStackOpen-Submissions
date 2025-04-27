@@ -2,23 +2,35 @@ import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 
 @modelOptions({
 	schemaOptions: {
-		collection: 'userInfo',
+		collection: 'users',
 		toJSON: {
 			transform: (document, object) => {
 				object['id'] = document.id;
 				delete object['_id'];
 				delete object['__v'];
+				delete object['passwordHash'];
 			},
 		},
 	}
 })
-class UserInfoSchema
+class UserSchema
 {
+	@prop({
+		required: true,
+		unique: true,
+		minlength: 3
+	})
+	username!: string;
+
+	@prop({
+		required: true
+	})
+	passwordHash!: string;
+
 	@prop({
 		required: true
 	})
 	name!: string;
 }
 
-const UserInfo = getModelForClass(UserInfoSchema);
-export default UserInfo;
+export default getModelForClass(UserSchema);
