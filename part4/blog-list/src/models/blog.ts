@@ -1,4 +1,7 @@
 import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
+import { UserSchema } from './user.js'
+
+import type { Ref } from '@typegoose/typegoose'
 
 @modelOptions({
 	schemaOptions: {
@@ -12,7 +15,7 @@ import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 		},
 	}
 })
-class BlogSchema
+export class BlogSchema
 {
 	@prop({
 		required: true,
@@ -34,6 +37,12 @@ class BlogSchema
 		default: 0
 	}) 
 	likes!: number;
+
+	@prop({
+		required: true,
+		ref: () => UserSchema
+	})
+	user!: Ref<UserSchema>;
 }
 
 export default getModelForClass(BlogSchema);

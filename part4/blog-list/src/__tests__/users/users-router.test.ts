@@ -61,7 +61,7 @@ describe('when creating a user', () => {
 		await addUser(user);
 
 		const createdUser = await User.findOne({ username: user.username });
-		expect(Bcrypt.compare(user.password, createdUser!.passwordHash)).toBeTruthy();
+		expect(await Bcrypt.compare(user.password, createdUser!.passwordHash)).toBeTruthy();
 	});
 
 	it('should error if no username is given', async () => {

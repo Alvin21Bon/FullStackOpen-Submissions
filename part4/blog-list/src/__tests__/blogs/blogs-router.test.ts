@@ -1,156 +1,266 @@
-import { test, expect } from 'vitest'
+import { it, expect, describe, beforeEach } from 'vitest'
 import Supertest from 'supertest'
 import App from '../../app.js'
-import Blog from '../../models/blog.js'
+import Blog, { BlogSchema } from '../../models/blog.js'
+import User from '../../models/user.js'
+import { isDocument } from '@typegoose/typegoose'
+
+import type { BlogCreateDTO } from '../../routers/DTOs/blogs-router.dtos.js'
+import type { DocumentType } from '@typegoose/typegoose'
 
 import testInitialBlogs from './test-initial-blogs.json' 
 import testBlogs from './test-blogs.json'
+import testUsers from './test-users.json'
 
-test('GET should match length of test initial blogs', async () => {
-	try {
-		await Blog.insertMany(testInitialBlogs);
-	} catch (err) {
-		throw err;
-	}
+const addBlog = async (blog:BlogCreateDTO, authHeader:string) => {
+	return (await Supertest(App)
+		.post('/api/blogs')
+		.send(blog)
+		.set('Authorization', authHeader));
+};
+
+const addUserAndGetAuthHeader = async (user:any) => {
+	const request = Supertest(App);
+	await request
+		.post('/api/users')
+		.send(user.user);
 
 	const res = 
+		await request
+		.post('/login')
+		.send(user.login);
+
+	const token = res.text;
+	return `JWT ${token}`;
+}
+
+type BlogDocument = DocumentType<BlogSchema>;
+
+describe('when querying the database', () => {
+	it('should not error with find operations', async () => {
+		try { await Blog.find() }
+		catch (err) { throw err }
+
+		try { await Blog.findOne() }
+		catch (err) { throw err }
+	});
+
+});
+
+describe('when creating blogs', () => {
+	let testUser:any;
+	let authorizationHeader:string;
+
+	beforeEach(async () => {
+		const testUserToUse = testUsers[0];
+		testUser = testUserToUse.user;
+		authorizationHeader = await addUserAndGetAuthHeader(testUserToUse);
+	});
+
+	it('should be guarded by tokens', async () => {
+		const blog = testInitialBlogs[0];
+
+		await Supertest(App)
+		.post('/api/blogs')
+		.send(blog)
+		.expect(401);
+	});
+
+	it('should succeed if valid blog data and valid token', async () => {
+		const blog = testInitialBlogs[0];
+
+		await Supertest(App)
+		.post('/api/blogs')
+		.send(blog)
+		.set('Authorization', authorizationHeader)
+		.expect(201);
+	});
+
+	it('should add to the blogs collection', async () => {
+		const blog = testInitialBlogs[0];
+
+		const initialBlogsLength = (await Blog.find()).length;
+		await addBlog(blog, authorizationHeader);
+		const resultBlogsLength = (await Blog.find()).length;
+
+		expect(resultBlogsLength).toBe(initialBlogsLength + 1);
+
+		const createdBlog = await Blog.findOne({ author: blog.author, title: blog.title, url: blog.url });
+		expect(createdBlog).toBeDefined();
+	});
+
+	it('should set the correct user ID', async () => {
+		const blog = testInitialBlogs[0];
+		const expectedUserId = (await User.findOne({ username: testUser.username, name: testUser.name }))!.id;
+
+		const createdBlog:BlogDocument = (await addBlog(blog, authorizationHeader)).body;
+		expect(createdBlog.user).toBe(expectedUserId);
+	});
+
+	it('should default likes to 0', async () => {
+		const createdBlog:BlogDocument = (await addBlog(testBlogs.noLikes, authorizationHeader)).body;
+		expect(createdBlog.likes).toBe(0);
+	});
+
+	it('should error if no title is supplied', async () => {
+		await Supertest(App)
+			.post('/api/blogs')
+			.send(testBlogs.noTitle)
+			.set('Authorization', authorizationHeader)
+			.expect(400);
+	});
+
+	it('should error if no URL is supplied', async () => {
+		await Supertest(App)
+			.post('/api/blogs')
+			.send(testBlogs.noURL)
+			.set('Authorization', authorizationHeader)
+			.expect(400);
+	});
+});
+
+describe('when retrieving blogs', () => {
+	let testUser: any;
+
+	beforeEach(async () => {
+		const testUserToUse = testUsers[0];
+		testUser = testUserToUse.user;
+		const authorizationHeader = await addUserAndGetAuthHeader(testUserToUse);
+
+		for (let blog of testInitialBlogs)
+		{
+			addBlog(blog, authorizationHeader);
+		}
+	});
+
+	it('should succeed and return json', async () => {
 		await Supertest(App)
 		.get('/api/blogs')
 		.expect(200)
 		.expect('Content-Type', /json/);
+	});
 
-	expect(res.body.length).toBe(testInitialBlogs.length);
-});
+	it('should match the length of test initial blogs', async () => {
+		const res = await Supertest(App).get('/api/blogs');
+		expect(res.body.length).toBe(testInitialBlogs.length);
+	});
 
-test('retrieved Blog documents should have id prop', async () => {
-	try {
-		await Blog.insertOne(testInitialBlogs[0]);
-	} catch (err) {
-		throw err;
-	}
+	it('should return blogs with cleaned data', async () => {
+		const res = await Supertest(App).get('/api/blogs');
+		expect(res.body[0].id).toBeDefined();
+		expect(res.body[0]._id).toBeUndefined();
+		expect(res.body[0].__v).toBeUndefined();
+	});
 
-	const res = 
+	it('should populate with user data', async () => {
+		const blogs:BlogDocument[] = (await Supertest(App).get('/api/blogs')).body;
+
+		for (let blog of blogs)
+		{
+			expect(isDocument(blog.user)).toBeTruthy();
+		}
+
+		if (isDocument(blogs[0].user)) // type narrowing
+		{
+			const expectedUser = testUser;
+			expect(blogs[0].user.username).toBe(expectedUser.username);
+			expect(blogs[0].user.name).toBe(expectedUser.name);
+		}
+	})
+})
+
+describe('when deleting blogs', () => {
+	let blogToDelete:BlogDocument;
+	let authorizationHeader:string;
+
+	beforeEach(async () => {
+		const blog = testInitialBlogs[0];
+		authorizationHeader = await addUserAndGetAuthHeader(testUsers[0]);
+		blogToDelete = (await addBlog(blog, authorizationHeader)).body;
+	});
+
+	it('should be guarded by tokens', async () => {
 		await Supertest(App)
-		.get('/api/blogs')
-		.expect(200)
-		.expect('Content-Type', /json/);
+			.delete(`/api/blogs/${blogToDelete.id}`)
+			.expect(401);
+	});
 
-	expect(res.body[0].id).toBeDefined();
-	expect(res.body[0]._id).toBeUndefined();
-});
-
-test('POST should add document to database', async () => {
-	try {
-		let blogs = await Blog.find();
-		var initialBlogsLength = blogs.length;
-	}
-	catch (err) {
-		throw err;
-	}
-
-	const res = 
+	it('should error if token for another user is given', async () => {
+		const anotherAuthorizationHeader = await addUserAndGetAuthHeader(testUsers[1]);
 		await Supertest(App)
-		.post('/api/blogs')
-		.send(testInitialBlogs[0])
-		.expect(201)
-		
+			.delete(`/api/blogs/${blogToDelete.id}`)
+			.set('Authorization', anotherAuthorizationHeader)
+			.expect(401);
+	});
 
-	try {
-		let blogs = await Blog.find();
-		var newBlogsLength = blogs.length;
-	}
-	catch (err) {
-		throw err;
-	}
-
-	expect(newBlogsLength).toBe(initialBlogsLength + 1);
-
-	const cleanedResponseBody = res.body;
-	delete cleanedResponseBody.id;
-	expect(cleanedResponseBody).toEqual(testInitialBlogs[0]);
-});
-
-test('Blogs should have default likes of 0', async () => {
-	const res = 
+	it('should succeed when given correct token', async () => {
 		await Supertest(App)
-		.post('/api/blogs')
-		.send(testBlogs.noLikes)
-		.expect(201)
-		
-	expect(res.body.likes).toBe(0);
+			.delete(`/api/blogs/${blogToDelete.id}`)
+			.set('Authorization', authorizationHeader)
+			.expect(204);
+	});
+
+	it('should remove from the blogs collection', async () => {
+		await Supertest(App)
+			.delete(`/api/blogs/${blogToDelete.id}`)
+			.set('Authorization', authorizationHeader);
+
+		expect(await Blog.findById(blogToDelete.id)).toBeFalsy();
+	});
 });
 
-test('Blogs with missing title should error', async () => {
-	await Supertest(App)
-		.post('/api/blogs')
-		.send(testBlogs.noTitle)
-		.expect(400);
-});
+describe('when updating blogs', () => {
+	let blogToUpdate:BlogDocument;
+	const blogToUpdateWith = testBlogs.normal;
+	let authorizationHeader:string;
 
-test('Blogs with missing URL should error', async () => {
-	await Supertest(App)
-		.post('/api/blogs')
-		.send(testBlogs.noURL)
-		.expect(400);
-});
+	beforeEach(async () => {
+		authorizationHeader = await addUserAndGetAuthHeader(testUsers[0]);
+		for (let blog of testInitialBlogs)
+		{
+			addBlog(blog, authorizationHeader);
+		}
 
-test('DELETE should remove from the database', async () => {
-	try { await Blog.insertMany([...testInitialBlogs]); }
-	catch (err) { throw err }
+		blogToUpdate = (await Blog.findOne())!;
+	});
 
-	const newBlog = new Blog(testBlogs.normal);
+	it('should be guarded by tokens', async () => {
+		await Supertest(App)
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send(blogToUpdateWith)
+			.expect(401);
+	});
 
-	try { await newBlog.save() }
-	catch (err) { throw err}
+	it('should error if token for another user is given', async () => {
+		const anotherAuthorizationHeader = await addUserAndGetAuthHeader(testUsers[1]);
+		await Supertest(App)
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send(blogToUpdateWith)
+			.set('Authorization', anotherAuthorizationHeader)
+			.expect(401);
+	});
 
-	try {
-		const blogs = await Blog.find();
-		var initialBlogsLength = blogs.length;
+	it('should succeed and return JSON when given correct token', async () => {
+		await Supertest(App)
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send(blogToUpdateWith)
+			.set('Authorization', authorizationHeader)
+			.expect(200)
+			.expect('Content-Type', /json/);
+	});
+
+	it('should update the target blog'), async () => {
+		await Supertest(App)
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send(blogToUpdateWith)
+			.set('Authorization', authorizationHeader);
+
+		const updatedBlog = await Blog.findById(blogToUpdate.id);
+		// check if all properties of blogToUpdateWith are now set in the updatedBlog
+		for (let key in blogToUpdateWith)
+		{
+			expect(updatedBlog![key]).toBe(blogToUpdateWith[key]);
+		}
 	}
-	catch (err) {
-		throw err
-	}
-
-	await Supertest(App)
-		.delete(`/api/blogs/${newBlog.id}`)
-		.expect(204)
-
-	try {
-		const blogs = await Blog.find();
-		var newBlogsLength = blogs.length;
-	}
-	catch (err) {
-		throw err;
-	}
-
-	expect(newBlogsLength).toBe(initialBlogsLength - 1);
-
-	try { var findByIdRes = await Blog.findById(newBlog.id) }
-	catch (err) { throw err }
-
-	expect(findByIdRes).toBeFalsy();
 });
 
-test('PUT should update the database', async () => {
-	try { await Blog.insertMany(testInitialBlogs) }
-	catch (err) { throw err }
-
-	try { var blogToUpdate = await Blog.findOne() }
-	catch (err) {throw err}
-
-	const newBlog = testBlogs.normal;
-	await Supertest(App)
-		.put(`/api/blogs/${blogToUpdate!.id}`)
-		.send(newBlog)
-		.expect(200)
-		.expect('Content-Type', /json/);
-
-	try { var updatedBlog = await Blog.findById(blogToUpdate!.id) }
-	catch (err) { throw err }
-
-	expect(updatedBlog).not.toEqual(blogToUpdate);
-
-	const updatedBlogObject = updatedBlog!.toJSON();
-	delete updatedBlogObject['id'];
-	expect(updatedBlogObject).toEqual(newBlog);
-});

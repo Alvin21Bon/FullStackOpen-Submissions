@@ -13,7 +13,7 @@ import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 		},
 	}
 })
-class UserSchema
+export class UserSchema
 {
 	@prop({
 		required: true,

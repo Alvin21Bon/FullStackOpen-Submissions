@@ -1,5 +1,6 @@
 import Logger from './logger.js'
 import { Mongoose } from './mongoose.js'
+import LoginError from '../routers/errors/login-router-errors.js'
 import type { RequestHandler, ErrorRequestHandler } from 'express'
 
 const requestLogger:RequestHandler = (req, _res, next) => {
@@ -71,6 +72,17 @@ errorMiddlewares.push(((err:unknown, _req, res, next) => {
 
 	res.json(err);
 }) as ErrorRequestHandler);
+
+// Login
+errorMiddlewares.push(((err:unknown, _req, res, next) => {
+	if (!(err instanceof LoginError))
+	{
+		next(err);
+		return;
+	}
+
+	res.status(err.statusCode).json(err);
+}) as ErrorRequestHandler)
 
 // unknwon error
 errorMiddlewares.push(((err, _req, res, _next) => {

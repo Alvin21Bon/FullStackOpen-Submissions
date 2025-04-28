@@ -1,0 +1,24 @@
+{
+	"normal": {
+		"username": "test-username",
+		"password": "test-password"
+	},
+
+	"wrongPassword": {
+		"username": "test-username",
+		"password": "wrong-password"
+	},
+
+	"wrongUsername": {
+		"username": "wrong-username",
+		"password": "test-password"
+	},
+
+	"noUsername": {
+		"password": "test-password"
+	},
+
+	"noPassword": {
+		"username": "test-username"
+	}
+}
