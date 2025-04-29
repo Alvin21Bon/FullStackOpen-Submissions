@@ -32,7 +32,7 @@ loginRouter.post('/', async (req:Request<{}, {}, LoginDTO>, res, next) => {
 
 	Logger.info(`${loginData.username} successfully authorized!`);
 
-	const token = JWT.sign({id: user.id}, Env.JWT_SECRET, { expiresIn: '1h' });
+	const token = JWT.sign({id: user._id}, Env.JWT_SECRET, { expiresIn: '1h' });
 	res.status(200).set('Content-Type', 'text/plain').send(token);
 });
 

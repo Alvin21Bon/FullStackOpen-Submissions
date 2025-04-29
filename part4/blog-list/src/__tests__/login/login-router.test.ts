@@ -6,6 +6,7 @@ import User from '../../models/user.js'
 import Env from '../../utils/env.js'
 
 import type { UserCreateDTO } from '../../routers/DTOs/users-router-dtos.js'
+import type { JWTPayloadDTO } from '../../routers/DTOs/login-router-dtos.js'
 import type { ObjectId } from 'mongoose'
 
 import testUserJSON from './test-user.json'
@@ -42,7 +43,7 @@ describe('when logging in', () => {
 			.send(testLogins.normal);
 
 		const token = res.text;
-		const payload = JWT.verify(token, Env.JWT_SECRET) as { id: ObjectId }; // TODO: DTO for this needed
+		const payload = JWT.verify(token, Env.JWT_SECRET) as JWTPayloadDTO
 
 		const user = await User.findById(payload.id);
 		expect(user!.username).toBe(testUser.username);

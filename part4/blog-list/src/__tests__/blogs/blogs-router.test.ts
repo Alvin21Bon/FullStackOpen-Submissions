@@ -129,7 +129,7 @@ describe('when retrieving blogs', () => {
 
 		for (let blog of testInitialBlogs)
 		{
-			addBlog(blog, authorizationHeader);
+			await addBlog(blog, authorizationHeader);
 		}
 	});
 
@@ -157,7 +157,7 @@ describe('when retrieving blogs', () => {
 
 		for (let blog of blogs)
 		{
-			expect(isDocument(blog.user)).toBeTruthy();
+			expect(isDocument(blog.user)).toBeDefined();
 		}
 
 		if (isDocument(blogs[0].user)) // type narrowing
@@ -218,7 +218,7 @@ describe('when updating blogs', () => {
 		authorizationHeader = await addUserAndGetAuthHeader(testUsers[0]);
 		for (let blog of testInitialBlogs)
 		{
-			addBlog(blog, authorizationHeader);
+			await addBlog(blog, authorizationHeader);
 		}
 
 		blogToUpdate = (await Blog.findOne())!;

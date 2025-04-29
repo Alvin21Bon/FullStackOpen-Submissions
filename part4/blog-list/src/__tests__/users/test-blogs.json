@@ -1,0 +1,20 @@
+[
+	{
+		"title": "test blog 1",
+		"author": "test author 1",
+		"url": "www.testurl1.com",
+		"likes": 123
+	},
+	{
+		"title": "test blog 2",
+		"author": "test author 2",
+		"url": "www.testurl2.com",
+		"likes": 321
+	},
+	{
+		"title": "test blog 3",
+		"author": "test author 3",
+		"url": "www.testurl3.com",
+		"likes": 444
+	}
+]

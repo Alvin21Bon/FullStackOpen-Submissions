@@ -3,3 +3,4 @@ export interface UserCreateDTO {
 	password: string;
 	name: string;
 };
+

@@ -11,6 +11,7 @@ import type { UserCreateDTO } from '../../routers/DTOs/users-router-dtos.js'
 import initialUsersJSON from './test-initial-users.json'
 const testInitialUsers = initialUsersJSON as UserCreateDTO[];
 import testUsers from './test-users.json'
+import testBlogs from './test-blogs.json'
 
 const addUser = async (user: UserCreateDTO) => {
 	return (await Supertest(App)
@@ -131,4 +132,33 @@ describe('when fetching the users', () => {
 	it('should match the length of inserted test initital users', async () => {
 		expect((await getUsers()).length).toBe(testInitialUsers.length);
 	});
+
+	it('should contain data of all the user created blogs', async () => {
+		const request = Supertest(App);
+
+		// get authorization header for a user and create some test blogs
+		const userToCreateBlogsWith = testInitialUsers[0];
+		const token = 
+			(await request
+			.post('/login')
+			.send({username: userToCreateBlogsWith.username, password: userToCreateBlogsWith.password})).text;
+		const authorizationHeader = `JWT ${token}`;
+
+		for (let blog of testBlogs)
+		{
+			await request
+			.post('/api/blogs')
+			.send(blog)
+			.set('Authorization', authorizationHeader);
+		}
+
+		// now testing
+		const users = await getUsers();
+		const targetUser = users.find((user:{ username: string }) => user.username === userToCreateBlogsWith.username);
+
+		expect("blogs" in targetUser).toBeTruthy();
+		// TODO: testing for if the blogs embedded are correct should be defined
+		// TODO: seperate describe group for integration testing with users with created blogs
+	});
 });
+

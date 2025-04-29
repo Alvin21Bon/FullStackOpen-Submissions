@@ -1,15 +1,22 @@
 import { prop, modelOptions, getModelForClass } from '@typegoose/typegoose'
 
+import type { DocumentType } from '@typegoose/typegoose'
+
+const commonTransform = (document:any, object:any) => {
+	object['id'] = document.id;
+	delete object['_id'];
+	delete object['__v'];
+	delete object['passwordHash'];
+};
+
 @modelOptions({
 	schemaOptions: {
 		collection: 'users',
 		toJSON: {
-			transform: (document, object) => {
-				object['id'] = document.id;
-				delete object['_id'];
-				delete object['__v'];
-				delete object['passwordHash'];
-			},
+			transform: commonTransform,
+		},
+		toObject: {
+			transform: commonTransform,
 		},
 	}
 })
