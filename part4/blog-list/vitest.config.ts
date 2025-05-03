@@ -7,6 +7,7 @@ export default defineConfig({
 	],
 
 	test: {
+		fileParallelism: false,
 		setupFiles: './src/__tests__/setup.ts',
 	},
 })
