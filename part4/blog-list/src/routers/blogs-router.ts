@@ -134,10 +134,11 @@ blogsRouter.put('/:id', async (req, res, next) => {
 		}
 
 		Logger.info(`Updating blog with id: ${blogId} with: ${blogToUpdateWith}...`)
+		blog!.set(blogToUpdateWith);
 
 		try {
-			const updatedBlog = await blog!.updateOne(blogToUpdateWith, { new: true, runValidators: true });
-			res.status(200).json(updatedBlog); 
+			await blog!.save();
+			res.status(200).json(blog); 
 		}
 		catch (err) {
 			next(err);
@@ -146,10 +147,11 @@ blogsRouter.put('/:id', async (req, res, next) => {
 
 	const onlyUpdateLikes = async (likesToUpdateBlogWith:{ likes: number }) => {
 		Logger.info(`Updating blog with id: ${blogId} to change likes to: ${likesToUpdateBlogWith.likes}...`);
+		blog!.set(likesToUpdateBlogWith);
 
 		try {
-			const updatedBlog = await blog!.updateOne(likesToUpdateBlogWith, { new: true, runValidators: true });
-			res.status(200).json(updatedBlog);
+			await blog!.save();
+			res.status(200).json(blog);
 		}
 		catch (err) {
 			next(err);
