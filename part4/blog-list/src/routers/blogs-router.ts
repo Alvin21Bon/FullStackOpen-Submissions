@@ -126,23 +126,50 @@ blogsRouter.put('/:id', async (req, res, next) => {
 		return;
 	}
 
-	if (blog!.user.toString() !== req.userId!.toString())
+	const updateEntireBlog = async (blogToUpdateWith:BlogCreateDTO) => {
+		if (blog!.user.toString() !== req.userId!.toString())
+		{
+			next(new BlogsError.authorizationError('Updating other user blogs is not allowed'));
+			return;
+		}
+
+		Logger.info(`Updating blog with id: ${blogId} with: ${blogToUpdateWith}...`)
+
+		try {
+			const updatedBlog = await blog!.updateOne(blogToUpdateWith, { new: true, runValidators: true });
+			res.status(200).json(updatedBlog); 
+		}
+		catch (err) {
+			next(err);
+		}
+	};
+
+	const onlyUpdateLikes = async (likesToUpdateBlogWith:{ likes: number }) => {
+		Logger.info(`Updating blog with id: ${blogId} to change likes to: ${likesToUpdateBlogWith.likes}...`);
+
+		try {
+			const updatedBlog = await blog!.updateOne(likesToUpdateBlogWith, { new: true, runValidators: true });
+			res.status(200).json(updatedBlog);
+		}
+		catch (err) {
+			next(err);
+		}
+	};
+
+	const requestPayload = req.body;
+	if (typeof requestPayload !== 'object' || requestPayload === null)
 	{
-		next(new BlogsError.authorizationError('Updating other user blogs is not allowed'));
+		next(new BlogsError.requestPayloadError('Updated blog must be an object'));
 		return;
 	}
 
-	const blogToUpdateWith = req.body as BlogCreateDTO;
-
-	Logger.info(`Updating blog with id: ${blogId} with: ${blogToUpdateWith}...`)
-
-	try {
-		const updatedPerson = await blog!.updateOne(blogToUpdateWith, { new: true, runValidators: true});
-		res.status(200).json(updatedPerson); 
+	if (Object.keys(requestPayload).length === 1 && typeof requestPayload['likes'] === 'number')
+	{
+		onlyUpdateLikes(requestPayload);
+		return;
 	}
-	catch (err) {
-		next(err);
-	}
+
+	updateEntireBlog(requestPayload);
 });
 
 export default blogsRouter;

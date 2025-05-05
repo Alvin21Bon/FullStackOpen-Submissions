@@ -249,7 +249,7 @@ describe('when updating blogs', () => {
 			.expect('Content-Type', /json/);
 	});
 
-	it('should update the target blog'), async () => {
+	it('should update the target blog', async () => {
 		await Supertest(App)
 			.put(`/api/blogs/${blogToUpdate.id}`)
 			.send(blogToUpdateWith)
@@ -261,6 +261,41 @@ describe('when updating blogs', () => {
 		{
 			expect(updatedBlog![key]).toBe(blogToUpdateWith[key]);
 		}
-	}
+	});
+
+	describe('to update only their likes', () => {
+		const randomLikesUpdate = {
+			likes: Math.floor(Math.random() * 1000)
+		};
+		
+		it('should succeed with any valid token and return JSON', async () => {
+			const anotherAuthorizationHeader = await addUserAndGetAuthHeader(testUsers[1]);
+			await Supertest(App)
+				.put(`/api/blogs/${blogToUpdate.id}`)
+				.send(randomLikesUpdate)
+				.set('Authorization', anotherAuthorizationHeader)
+				.expect(200)
+				.expect('Content-Type', /json/);
+		});
+
+		it('should only update the likes of the target blog', async () => {
+			const originalBlog = await Blog.findById(blogToUpdate.id).lean();
+
+			await Supertest(App)
+				.put(`/api/blogs/${blogToUpdate.id}`)
+				.send(randomLikesUpdate)
+				.set('Authorization', authorizationHeader);
+
+			const updatedBlog = await Blog.findById(blogToUpdate.id).lean();
+
+			for (let key in updatedBlog)
+			{
+				if (key !== 'likes')
+				{
+					expect(updatedBlog![key]).toStrictEqual(originalBlog![key]);
+				}
+			}
+		});
+	});
 });
 
