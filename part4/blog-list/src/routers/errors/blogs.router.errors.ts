@@ -10,6 +10,15 @@ class BlogsError extends Error
 		this.name = new.target.name;
 		if (Error.captureStackTrace) Error.captureStackTrace(this, this.constructor);
 	}
+
+	toJSON()
+	{
+		return {
+			name: this.name,
+			statusCode: this.statusCode,
+			message: this.message,
+		};
+	};
 }
 
 class AuthHeaderValidationError extends BlogsError
