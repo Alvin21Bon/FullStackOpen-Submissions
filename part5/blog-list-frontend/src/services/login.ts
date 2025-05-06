@@ -10,11 +10,13 @@ interface LoginDTO {
 
 const baseUrl = '/login';
 let authHeader:string|undefined;
+let username:string|undefined;
 
 const login = async (credentials:LoginDTO) => {
 	try {
 		const token = (await Axios.post(baseUrl, credentials)).data as string;
 		authHeader = `JWT ${token}`;
+		username = credentials.username;
 	}
 	catch (err) {
 		if (isStandardError(err)) throw err;
@@ -23,10 +25,14 @@ const login = async (credentials:LoginDTO) => {
 	}
 };
 
-const logout = () => authHeader = undefined;
+const logout = () => {
+	authHeader = undefined;
+	username = undefined;
+};
 const isLoggedOut = () => authHeader === undefined;
 const isLoggedIn = () => authHeader !== undefined;
 const getAuthHeader = () => authHeader;
+const getUsername = () => username;
 
-export default { login, logout, isLoggedOut, isLoggedIn, getAuthHeader }
+export default { login, logout, isLoggedOut, isLoggedIn, getAuthHeader, getUsername }
 
