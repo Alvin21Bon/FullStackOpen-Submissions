@@ -18,7 +18,7 @@ const authenticatedAxiosRequest = <T extends (...args: any[]) => Promise<any>>(
 
 		const tempAddAuthHeaderInterceptor = Axios.interceptors.request.use(
 			(config) => {
-				config.headers.Authorization = LoginService.getAuthHeader();
+				config.headers.Authorization = LoginService.getUserData()!.authHeader;
 				return config;
 			},
 			(err) => Promise.reject(err)

@@ -6,17 +6,27 @@ interface LoginDTO {
 	password: string;
 };
 
+interface LoggedInDTO {
+	token: string;
+	username: string;
+	name: string;
+};
+
 ///////////////////////////////////////////////////////////
 
 const baseUrl = '/login';
-let authHeader:string|undefined;
-let username:string|undefined;
+
+type LoggedInUserData = (Omit<LoggedInDTO, 'token'> & { authHeader: string }) | undefined;
+let loggedInUserData:LoggedInUserData = undefined;
 
 const login = async (credentials:LoginDTO) => {
 	try {
-		const token = (await Axios.post(baseUrl, credentials)).data as string;
-		authHeader = `JWT ${token}`;
-		username = credentials.username;
+		const payload = (await Axios.post(baseUrl, credentials)).data as LoggedInDTO;
+		loggedInUserData = {
+			authHeader: `JWT ${payload.token}`,
+			username: payload.username,
+			name: payload.name
+		};
 	}
 	catch (err) {
 		if (isStandardError(err)) throw err;
@@ -25,14 +35,10 @@ const login = async (credentials:LoginDTO) => {
 	}
 };
 
-const logout = () => {
-	authHeader = undefined;
-	username = undefined;
-};
-const isLoggedOut = () => authHeader === undefined;
-const isLoggedIn = () => authHeader !== undefined;
-const getAuthHeader = () => authHeader;
-const getUsername = () => username;
+const logout = () => loggedInUserData = undefined;
+const isLoggedOut = () => loggedInUserData === undefined;
+const isLoggedIn = () => loggedInUserData !== undefined;
+const getUserData = () => loggedInUserData;
 
-export default { login, logout, isLoggedOut, isLoggedIn, getAuthHeader, getUsername }
+export default { login, logout, isLoggedOut, isLoggedIn, getUserData }
 
