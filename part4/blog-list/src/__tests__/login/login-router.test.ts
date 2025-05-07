@@ -6,7 +6,7 @@ import User from '../../models/user.js'
 import Env from '../../utils/env.js'
 
 import type { UserCreateDTO } from '../../routers/DTOs/users-router-dtos.js'
-import type { JWTPayloadDTO } from '../../routers/DTOs/login-router-dtos.js'
+import type { JWTPayloadDTO, LoginResponseDTO } from '../../routers/DTOs/login-router-dtos.js'
 import type { ObjectId } from 'mongoose'
 
 import testUserJSON from './test-user.json'
@@ -33,8 +33,8 @@ describe('when logging in', () => {
 			.post('/login')
 			.send(testLogins.normal);
 
-		const token = res.text;
-		JWT.verify(token, Env.JWT_SECRET);
+		const payload:LoginResponseDTO = res.body;
+		JWT.verify(payload.token, Env.JWT_SECRET);
 	});
 
 	it('sends a JWT with correct userId data on correct logins', async () => {
@@ -42,12 +42,22 @@ describe('when logging in', () => {
 			.post('/login')
 			.send(testLogins.normal);
 
-		const token = res.text;
-		const payload = JWT.verify(token, Env.JWT_SECRET) as JWTPayloadDTO
+		const payload:LoginResponseDTO = res.body;
+		const jwtPayload = JWT.verify(payload.token, Env.JWT_SECRET) as JWTPayloadDTO;
 
-		const user = await User.findById(payload.id);
+		const user = await User.findById(jwtPayload.id);
 		expect(user!.username).toBe(testUser.username);
 		expect(user!.name).toBe(testUser.name);
+	});
+
+	it('sends the correct username and name data for logged in user', async () => {
+		const res = await Supertest(App)
+			.post('/login')
+			.send(testLogins.normal);
+
+		const payload:LoginResponseDTO = res.body;
+		expect(testUser.username).toBe(payload.username);
+		expect(testUser.name).toBe(payload.name);
 	});
 
 	it('errors on no supplied username', async () => {
@@ -78,3 +88,4 @@ describe('when logging in', () => {
 			.expect(401);
 	});
 });
+

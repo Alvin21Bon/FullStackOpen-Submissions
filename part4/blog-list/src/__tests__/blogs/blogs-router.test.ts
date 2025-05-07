@@ -7,6 +7,7 @@ import { isDocument } from '@typegoose/typegoose'
 
 import type { BlogCreateDTO } from '../../routers/DTOs/blogs-router.dtos.js'
 import type { DocumentType } from '@typegoose/typegoose'
+import type { LoginResponseDTO } from '../../routers/DTOs/login-router-dtos.js'
 
 import testInitialBlogs from './test-initial-blogs.json' 
 import testBlogs from './test-blogs.json'
@@ -30,8 +31,8 @@ const addUserAndGetAuthHeader = async (user:any) => {
 		.post('/login')
 		.send(user.login);
 
-	const token = res.text;
-	return `JWT ${token}`;
+	const responsePayload:LoginResponseDTO = res.body;
+	return `JWT ${responsePayload.token}`;
 }
 
 type BlogDocument = DocumentType<BlogSchema>;

@@ -6,12 +6,12 @@ import LoginError from './errors/login-router-errors.js'
 import Env from '../utils/env.js'
 import Logger from '../utils/logger.js'
 
-import type { LoginDTO } from './DTOs/login-router-dtos.js';
-import type { Request } from 'express'
+import type { LoginDTO, LoginResponseDTO } from './DTOs/login-router-dtos.js';
+import type { Request, Response } from 'express'
 
 const loginRouter = Router();
 
-loginRouter.post('/', async (req:Request<{}, {}, LoginDTO>, res, next) => {
+loginRouter.post('/', async (req:Request<{}, {}, LoginDTO>, res:Response<LoginResponseDTO>, next) => {
 	const loginData = req.body;
 	if 
 	(
@@ -33,7 +33,13 @@ loginRouter.post('/', async (req:Request<{}, {}, LoginDTO>, res, next) => {
 	Logger.info(`${loginData.username} successfully authorized!`);
 
 	const token = JWT.sign({id: user._id}, Env.JWT_SECRET, { expiresIn: '1h' });
-	res.status(200).set('Content-Type', 'text/plain').send(token);
+	const payload:LoginResponseDTO = {
+		token: token,
+		username: user.username,
+		name: user.name
+	};
+
+	res.status(200).json(payload);
 });
 
 export default loginRouter;

@@ -8,3 +8,10 @@ export interface LoginDTO {
 export interface JWTPayloadDTO {
 	id: ObjectId;
 };
+
+export interface LoginResponseDTO {
+	token: string;
+	username: string;
+	name: string;
+};
+
