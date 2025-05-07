@@ -21,7 +21,7 @@ type CreatedBlogDTO = Blog;
 type UpdateBlogDTO = CreateBlogDTO;
 type UpdatedBlogDTO = Blog;
 
-interface FetchedBlogDTO extends Omit<Blog, 'user'> {
+export interface FetchedBlogDTO extends Omit<Blog, 'user'> {
 	user: SanitizedUser;
 };
 

@@ -1,15 +1,6 @@
-import UserLoginField from './UserLoginField'
-import UserCreateField from './UserCreateField'
+import BloglistApp from './BloglistApp'
 
-const App = () => {
-	return (
-		<div>
-			<UserCreateField />
-			<UserLoginField />
-		</div>
-	)
-
-};
+const App = () => <BloglistApp />;
 
 export default App;
 
