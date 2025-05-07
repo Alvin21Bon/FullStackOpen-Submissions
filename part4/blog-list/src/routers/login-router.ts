@@ -36,7 +36,8 @@ loginRouter.post('/', async (req:Request<{}, {}, LoginDTO>, res:Response<LoginRe
 	const payload:LoginResponseDTO = {
 		token: token,
 		username: user.username,
-		name: user.name
+		name: user.name,
+		id: user.id
 	};
 
 	res.status(200).json(payload);

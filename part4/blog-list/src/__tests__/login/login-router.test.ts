@@ -60,6 +60,18 @@ describe('when logging in', () => {
 		expect(testUser.name).toBe(payload.name);
 	});
 
+	it('sends the correct userId for the logged in user (outside of JWT)', async () => {
+		const res = await Supertest(App)
+			.post('/login')
+			.send(testLogins.normal);
+
+		const payload:LoginResponseDTO = res.body;
+		const user = await User.findById(payload.id);
+		expect(user).toBeDefined();
+		expect(user!.username).toBe(payload.username);
+		expect(user!.name).toBe(payload.name);
+	});
+
 	it('errors on no supplied username', async () => {
 		await Supertest(App)
 			.post('/login')

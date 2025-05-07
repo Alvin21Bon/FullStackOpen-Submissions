@@ -13,5 +13,6 @@ export interface LoginResponseDTO {
 	token: string;
 	username: string;
 	name: string;
+	id: string;
 };
 
