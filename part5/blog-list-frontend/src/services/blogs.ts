@@ -21,6 +21,10 @@ type CreatedBlogDTO = Blog;
 type UpdateBlogDTO = CreateBlogDTO;
 type UpdatedBlogDTO = Blog;
 
+interface UpdateBlogLikesDTO {
+	likes: number;
+};
+
 export interface FetchedBlogDTO extends Omit<Blog, 'user'> {
 	user: SanitizedUser;
 };
@@ -51,6 +55,21 @@ const update = authenticatedAxiosRequest(async (id:string, blogToUpdateWith:Upda
 	}
 });
 
+const updateLikes = authenticatedAxiosRequest(async (id:string, updatedLikes:number) => {
+	const updateLikesDTO:UpdateBlogLikesDTO = {
+		likes: updatedLikes
+	};
+
+	try {
+		return (await Axios.put(`${baseUrl}/${id}`, updateLikesDTO)).data as UpdatedBlogDTO;
+	}
+	catch (err) {
+		if (isStandardError(err)) throw err;
+
+		throw unknownError;
+	}
+});
+
 const remove = authenticatedAxiosRequest(async (id:string) => {
 	try {
 		await Axios.delete(`${baseUrl}/${id}`);
@@ -73,5 +92,5 @@ const fetch = async () => {
 	}
 };
 
-export default { create, update, remove, fetch }
+export default { create, update, updateLikes, remove, fetch }
 

@@ -1,15 +1,15 @@
 import Axios, { isStandardError, unknownError } from './axios'
 
+import type { SanitizedUser } from './users'
+
 // DTOs
 interface LoginDTO {
 	username: string;
 	password: string;
 };
 
-interface LoggedInDTO {
+interface LoggedInDTO extends SanitizedUser {
 	token: string;
-	username: string;
-	name: string;
 };
 
 ///////////////////////////////////////////////////////////
@@ -25,7 +25,8 @@ const login = async (credentials:LoginDTO) => {
 		loggedInUserData = {
 			authHeader: `JWT ${payload.token}`,
 			username: payload.username,
-			name: payload.name
+			name: payload.name,
+			id: payload.id
 		};
 	}
 	catch (err) {

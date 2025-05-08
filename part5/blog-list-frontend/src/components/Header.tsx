@@ -11,20 +11,18 @@ interface HeaderProps {
 
 function Header({isLoggedIn, setIsLoggedIn}: HeaderProps)
 {
-	return (<>
-		{
-			isLoggedIn ? (
-				<LoggedInInfo
-					setIsLoggedIn={setIsLoggedIn}
-				/>
-			) : (<>
-				<LoginForm
-					setIsLoggedIn={setIsLoggedIn}
-				/>
-				<CreateUserForm />
-			</>)
-		}
-	</>)
+	return (
+		<>
+			{isLoggedIn ? (
+				<LoggedInInfo setIsLoggedIn={setIsLoggedIn} />
+			) : (
+				<>
+					<LoginForm setIsLoggedIn={setIsLoggedIn} />
+					<CreateUserForm />
+				</>
+			)}
+		</>
+	);
 }
 
 export default Header;
