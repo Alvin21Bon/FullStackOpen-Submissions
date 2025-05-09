@@ -6,7 +6,11 @@ interface BlogEntryInfoRowProps {
 
 function BlogEntryInfoRow({children}: BlogEntryInfoRowProps)
 {
-	return children;
+	return (
+		<li>
+			{children}
+		</li>
+	);
 }
 
 export default BlogEntryInfoRow;

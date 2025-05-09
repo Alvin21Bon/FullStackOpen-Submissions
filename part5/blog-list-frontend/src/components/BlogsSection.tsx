@@ -26,11 +26,13 @@ function BlogsSection({isLoggedIn}: BlogsSectionProps)
 	}, []);
 
 	return (
-		<>
+		<section>
 			<h1>Blogs</h1>
-			{isLoggedIn && <SubmitBlogForm setBlogsData={setBlogsData} />}
-			<Blogs blogsData={blogsData} setBlogsData={setBlogsData} isLoggedIn={isLoggedIn} />
-		</>
+			{isLoggedIn && <article><SubmitBlogForm setBlogsData={setBlogsData} /></article>}
+			<section aria-label="Blog List">
+				<Blogs blogsData={blogsData} setBlogsData={setBlogsData} isLoggedIn={isLoggedIn} />
+			</section>
+		</section>
 	);
 }
 

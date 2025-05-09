@@ -32,52 +32,57 @@ function BlogEntry({blogData, setBlogsData, isLoggedIn}: BlogEntryProps)
 	}
 
 	const handleLike:ChangeEventHandler<HTMLInputElement> = async (event) => {
-		const newLikesAmount = blogData.likes + (event.target.checked ? 1 : -1);
+		const originalLikesAmount = blogData.likes;
+		const newLikesAmount = originalLikesAmount + (event.target.checked ? 1 : -1);
+
+		setBlogsData((prevBlogsData) => prevBlogsData.map((blog) =>
+			blog.id === blogData.id ? {...blog, likes: newLikesAmount} : blog
+		));
 
 		try {
 			await BlogsService.updateLikes(blogData.id, newLikesAmount);
-			setBlogsData((prevBlogsData) => prevBlogsData.map((blog) =>
-				blog.id === blogData.id ? {...blog, likes: newLikesAmount} : blog
-			));
 		}
 		catch (err) {
+			setBlogsData((prevBlogsData) => prevBlogsData.map((blog) =>
+				blog.id === blogData.id ? {...blog, likes: originalLikesAmount} : blog
+			));
 			console.log('ERROR NOTICE IN BLOG ENTRY LIKING', err);
 		}
 	}
 
 	return (
-		<>
-			<BlogEntryInfoRow>
-				{blogData.title}
-				{isExpanded ? (
-					<button onClick={() => setIsExpanded(false)}>Hide</button>
-				) : (
-					<button onClick={() => setIsExpanded(true)}>View</button>
+		<article>
+			<header>
+				<h2>{blogData.title}</h2>
+				<button onClick={() => setIsExpanded((prev) => !prev)}>
+					{isExpanded ? 'Hide' : 'View'}
+				</button>
+			</header>
+
+			<ul>
+				{isExpanded && (
+					<>
+						<BlogEntryInfoRow>
+							<p>{blogData.url}</p>
+						</BlogEntryInfoRow>
+
+						<BlogEntryInfoRow>
+							<p>Likes: <strong>{blogData.likes}</strong></p>
+							{isLoggedIn && <input type='checkbox' onChange={handleLike} />}
+						</BlogEntryInfoRow>
+
+						<BlogEntryInfoRow>
+							<p>{blogData.author}</p>
+						</BlogEntryInfoRow>
+
+						<BlogEntryInfoRow>
+							<p>Submitted by {blogData.user.username}</p>
+							{isBlogSubmittedByLoggedInUser && <button onClick={handleUnsubmit}>Unsubmit</button>}
+						</BlogEntryInfoRow>
+					</>
 				)}
-			</BlogEntryInfoRow>
-
-			{isExpanded && (
-				<>
-					<BlogEntryInfoRow>
-						{blogData.url}
-					</BlogEntryInfoRow>
-
-					<BlogEntryInfoRow>
-						<p>Likes: {blogData.likes}</p>
-						{isLoggedIn && <input type='checkbox' onChange={handleLike} />}
-					</BlogEntryInfoRow>
-
-					<BlogEntryInfoRow>
-						{blogData.author}
-					</BlogEntryInfoRow>
-
-					<BlogEntryInfoRow>
-						<p>Submitted by {blogData.user.username}</p>
-						{isBlogSubmittedByLoggedInUser && <button onClick={handleUnsubmit}>Unsubmit</button>}
-					</BlogEntryInfoRow>
-				</>
-			)}
-		</>
+			</ul>
+		</article>
 	);
 }
 

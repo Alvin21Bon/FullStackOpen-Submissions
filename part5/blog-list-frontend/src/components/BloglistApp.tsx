@@ -8,13 +8,17 @@ function BloglistApp()
 
 	return (
 		<>
-			<Header 
-				isLoggedIn={isLoggedIn}
-				setIsLoggedIn={setIsLoggedIn}
-			/>
-			<BlogsSection
-				isLoggedIn={isLoggedIn}
-			/>
+			<header>
+				<Header 
+					isLoggedIn={isLoggedIn}
+					setIsLoggedIn={setIsLoggedIn}
+				/>
+			</header>
+			<main>
+				<BlogsSection
+					isLoggedIn={isLoggedIn}
+				/>
+			</main>
 		</>
 	)
 }

@@ -17,8 +17,12 @@ function Header({isLoggedIn, setIsLoggedIn}: HeaderProps)
 				<LoggedInInfo setIsLoggedIn={setIsLoggedIn} />
 			) : (
 				<>
-					<LoginForm setIsLoggedIn={setIsLoggedIn} />
-					<CreateUserForm />
+					<article>
+						<LoginForm setIsLoggedIn={setIsLoggedIn} />
+					</article>
+					<article>
+						<CreateUserForm />
+					</article>
 				</>
 			)}
 		</>

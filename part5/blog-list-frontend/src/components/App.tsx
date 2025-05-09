@@ -1,6 +1,9 @@
 import BloglistApp from './BloglistApp'
 
-const App = () => <BloglistApp />;
+function App()
+{
+	return <BloglistApp />;
+}
 
 export default App;
 

@@ -11,10 +11,10 @@ interface BlogsProps {
 
 function Blogs({blogsData, setBlogsData, isLoggedIn}: BlogsProps)
 {
-	const blogsSortedByMostLikes = [...blogsData].sort((leftBlog, rightBlog) => leftBlog.likes - rightBlog.likes);
+	const blogsSortedByMostLikes = [...blogsData].sort((leftBlog, rightBlog) => rightBlog.likes - leftBlog.likes);
 
 	return (
-		<>
+		<div>
 			{blogsSortedByMostLikes.map((blog) => (
 				<BlogEntry
 					key={blog.id}
@@ -23,7 +23,7 @@ function Blogs({blogsData, setBlogsData, isLoggedIn}: BlogsProps)
 					setBlogsData={setBlogsData}
 				/>
 			))}
-		</>
+		</div>
 	);
 }
 

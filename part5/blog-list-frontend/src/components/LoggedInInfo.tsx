@@ -10,7 +10,9 @@ function LoggedInInfo({setIsLoggedIn}: LoggedInInfoProps)
 {
 	return (
 		<>
-			<p>Logged in as {LoginService.getUserData()?.name}</p>
+			<p>
+				Logged in as <em>{LoginService.getUserData()?.name}</em>
+			</p>
 			<button onClick={() => setIsLoggedIn(false)}>Logout</button>
 		</>
 	);
