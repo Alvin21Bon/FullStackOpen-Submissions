@@ -1,0 +1,10 @@
+.submit-blog-button {
+	margin-top: -0.5em;
+	margin-bottom: 1em;
+}
+
+.submit-blog-form {
+	max-width: max(40%, 30em);
+	margin-bottom: 2em;
+}
+

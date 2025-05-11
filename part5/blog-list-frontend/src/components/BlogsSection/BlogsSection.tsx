@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
-import SubmitBlogForm from './SubmitBlogForm'
-import Blogs from './Blogs'
-import BlogsService from '../services/blogs'
+import './BlogSection.css'
 
-import type { FetchedBlogDTO } from '../services/blogs'
+import { useState, useEffect } from 'react'
+import SubmitBlogForm from '../SubmitBlogForm/SubmitBlogForm'
+import Blogs from '../Blogs/Blogs'
+import BlogsService from '../../services/blogs'
+
+import type { FetchedBlogDTO } from '../../services/blogs'
 
 interface BlogsSectionProps {
 	isLoggedIn: boolean;
@@ -27,7 +29,7 @@ function BlogsSection({isLoggedIn}: BlogsSectionProps)
 
 	return (
 		<section>
-			<h1>Blogs</h1>
+			<h1 className='main-header'>Blogs</h1>
 			{isLoggedIn && <article><SubmitBlogForm setBlogsData={setBlogsData} /></article>}
 			<section aria-label="Blog List">
 				<Blogs blogsData={blogsData} setBlogsData={setBlogsData} isLoggedIn={isLoggedIn} />

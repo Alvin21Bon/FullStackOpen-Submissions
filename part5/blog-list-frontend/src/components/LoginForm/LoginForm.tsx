@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import InputField from './InputField';
-import LoginService from '../services/login'
+import InputField from '../InputField/InputField';
+import LoginService from '../../services/login'
 
 import type { FormEventHandler, Dispatch, SetStateAction } from 'react'
 
@@ -50,7 +50,7 @@ function LoginForm({setIsLoggedIn}: LoginFormProps)
 				value={passwordInput}
 				onChange={(event) => setPasswordInput(event.target.value)}
 			/>
-			<button type='submit'>Login</button>
+			<button type='submit' className='submit-button'>Login</button>
 		</form>
 	);
 }

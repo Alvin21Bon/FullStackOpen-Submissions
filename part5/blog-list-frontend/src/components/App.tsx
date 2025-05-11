@@ -1,4 +1,4 @@
-import BloglistApp from './BloglistApp'
+import BloglistApp from './BloglistApp/BloglistApp'
 
 function App()
 {

@@ -1,10 +1,12 @@
+import './SubmitBlogForm.css'
+
 import { useState } from 'react'
-import InputField from './InputField'
-import BlogsService from '../services/blogs'
-import LoginService from '../services/login'
+import InputField from '../InputField/InputField'
+import BlogsService from '../../services/blogs'
+import LoginService from '../../services/login'
 
 import type { Dispatch, SetStateAction, FormEventHandler } from 'react'
-import type { FetchedBlogDTO } from '../services/blogs'
+import type { FetchedBlogDTO } from '../../services/blogs'
 
 interface SubmitBlogFormProps {
 	setBlogsData: Dispatch<SetStateAction<FetchedBlogDTO[]>>;
@@ -53,7 +55,7 @@ function SubmitBlogForm({setBlogsData}: SubmitBlogFormProps)
 	return (
 		<>
 			{isExpanded ? (
-				<form onSubmit={handleSubmit}>
+				<form onSubmit={handleSubmit} className='submit-blog-form'>
 					<h2>Submit a Blog</h2>
 					<InputField
 						label='Title: '
@@ -74,11 +76,13 @@ function SubmitBlogForm({setBlogsData}: SubmitBlogFormProps)
 						value={urlInput}
 						onChange={(event) => setUrlInput(event.target.value)}
 					/>
-					<button onClick={setUnexpanded}>Cancel</button>
-					<button type='submit'>Submit</button>
+					<div className='submit-button'>
+						<button onClick={setUnexpanded}>Cancel</button>
+						<button type='submit'>Submit</button>
+					</div>
 				</form>
 			) : (
-				<button onClick={() => setIsExpanded(true)}>Submit a Blog</button>
+				<button onClick={() => setIsExpanded(true)} className='submit-blog-button'>Submit a Blog</button>
 			)}
 		</>
 	);

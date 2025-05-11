@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import InputField from './InputField';
-import UsersService from '../services/users'
+import InputField from '../InputField/InputField';
+import UsersService from '../../services/users'
 
 import type { FormEventHandler } from 'react'
 
@@ -52,7 +52,7 @@ function CreateUserForm()
 				value={passwordInput}
 				onChange={(event) => setPasswordInput(event.target.value)}
 			/>
-			<button type='submit'>Create</button>
+			<button type='submit' className='submit-button'>Create</button>
 		</form>
 	)
 }

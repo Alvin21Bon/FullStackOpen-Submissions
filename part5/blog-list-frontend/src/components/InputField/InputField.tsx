@@ -1,3 +1,5 @@
+import './InputField.css'
+
 import type { ChangeEventHandler, HTMLInputTypeAttribute } from 'react'
 
 interface InputFieldProps {
@@ -11,10 +13,10 @@ interface InputFieldProps {
 function InputField({id, label, type='text', value, onChange}: InputFieldProps)
 {
 	return (
-		<>
-			<label htmlFor={id}>{label}</label>
+		<label htmlFor={id} className='text-input-field'>
+			<span>{label}</span>
 			<input id={id} type={type} value={value} onChange={onChange} />
-		</>
+		</label>
 	)
 }
 

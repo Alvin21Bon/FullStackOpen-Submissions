@@ -1,6 +1,8 @@
+import './BloglistApp.css'
+
 import { useState } from 'react';
-import Header from './Header'
-import BlogsSection from './BlogsSection'
+import Header from '../Header/Header'
+import BlogsSection from '../BlogsSection/BlogsSection'
 
 function BloglistApp()
 {
@@ -8,7 +10,7 @@ function BloglistApp()
 
 	return (
 		<>
-			<header>
+			<header className="webpage-header">
 				<Header 
 					isLoggedIn={isLoggedIn}
 					setIsLoggedIn={setIsLoggedIn}

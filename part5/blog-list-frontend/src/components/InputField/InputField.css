@@ -1,0 +1,13 @@
+label.text-input-field {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	column-gap: 10px;
+	margin-bottom: 0.2em;
+	margin-top: 0.2em;
+}
+
+label.text-input-field > span {
+	color: #a9adb4;
+	min-width: fit-content;
+}
+

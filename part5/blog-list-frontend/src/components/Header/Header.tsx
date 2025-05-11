@@ -1,6 +1,8 @@
-import LoginForm from './LoginForm'
-import CreateUserForm from './CreateUserForm'
-import LoggedInInfo from './LoggedInInfo'
+import './Header.css'
+
+import LoginForm from '../LoginForm/LoginForm'
+import CreateUserForm from '../CreateUserForm/CreateUserForm'
+import LoggedInInfo from '../LoggedInInfo/LoggedInInfo'
 
 import type { Dispatch, SetStateAction } from 'react'
 
@@ -16,14 +18,14 @@ function Header({isLoggedIn, setIsLoggedIn}: HeaderProps)
 			{isLoggedIn ? (
 				<LoggedInInfo setIsLoggedIn={setIsLoggedIn} />
 			) : (
-				<>
+				<section className='header-forms'>
 					<article>
 						<LoginForm setIsLoggedIn={setIsLoggedIn} />
 					</article>
 					<article>
 						<CreateUserForm />
 					</article>
-				</>
+				</section>
 			)}
 		</>
 	);

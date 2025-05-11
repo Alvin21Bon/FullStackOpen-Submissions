@@ -1,7 +1,7 @@
-import BlogEntry from './BlogEntry'
+import BlogEntry from '../BlogEntry/BlogEntry'
 
 import type { Dispatch, SetStateAction } from 'react'
-import type { FetchedBlogDTO } from '../services/blogs'
+import type { FetchedBlogDTO } from '../../services/blogs'
 
 interface BlogsProps {
 	blogsData: FetchedBlogDTO[];
@@ -14,7 +14,7 @@ function Blogs({blogsData, setBlogsData, isLoggedIn}: BlogsProps)
 	const blogsSortedByMostLikes = [...blogsData].sort((leftBlog, rightBlog) => rightBlog.likes - leftBlog.likes);
 
 	return (
-		<div>
+		<>
 			{blogsSortedByMostLikes.map((blog) => (
 				<BlogEntry
 					key={blog.id}
@@ -23,7 +23,7 @@ function Blogs({blogsData, setBlogsData, isLoggedIn}: BlogsProps)
 					setBlogsData={setBlogsData}
 				/>
 			))}
-		</div>
+		</>
 	);
 }
 

@@ -1,10 +1,12 @@
+import './BlogEntry.css'
+
 import { useState } from 'react'
-import BlogEntryInfoRow from './BlogEntryInfoRow'
-import BlogsService from '../services/blogs'
-import LoginService from '../services/login'
+import BlogEntryInfoRow from '../BlogEntryInfoRow/BlogEntryInfoRow'
+import BlogsService from '../../services/blogs'
+import LoginService from '../../services/login'
 
 import type { Dispatch, SetStateAction, MouseEventHandler, ChangeEventHandler } from 'react'
-import type { FetchedBlogDTO } from '../services/blogs'
+import type { FetchedBlogDTO } from '../../services/blogs'
 
 interface BlogEntryProps {
 	blogData: FetchedBlogDTO;
@@ -51,9 +53,9 @@ function BlogEntry({blogData, setBlogsData, isLoggedIn}: BlogEntryProps)
 	}
 
 	return (
-		<article>
+		<article className='blog-entry'>
 			<header>
-				<h2>{blogData.title}</h2>
+				<h2 className='blog-title'>{blogData.title}</h2>
 				<button onClick={() => setIsExpanded((prev) => !prev)}>
 					{isExpanded ? 'Hide' : 'View'}
 				</button>

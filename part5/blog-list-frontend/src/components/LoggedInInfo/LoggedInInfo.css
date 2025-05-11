@@ -1,0 +1,15 @@
+.header-user-info {
+	max-width: fit-content;
+	height: 100%;
+	margin-left: auto;
+}
+
+.header-user-info p {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.header-user-info button {
+	padding: 0.2em 1em;
+	margin-right: 2em;
+}
