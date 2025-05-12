@@ -61,6 +61,8 @@ button {
 	display: inline-block;
 	font-size: 0.8em;
 	border-radius: 10px;
+
+	cursor:pointer;
 }
 
 button:hover {

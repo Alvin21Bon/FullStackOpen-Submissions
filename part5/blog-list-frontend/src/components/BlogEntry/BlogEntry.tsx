@@ -1,11 +1,13 @@
 import './BlogEntry.css'
+import LikeIconUnliked from '../../assets/like-icon-unliked.png'
+import LikeIconLiked from '../../assets/like-icon-liked.png'
 
 import { useState } from 'react'
 import BlogEntryInfoRow from '../BlogEntryInfoRow/BlogEntryInfoRow'
 import BlogsService from '../../services/blogs'
 import LoginService from '../../services/login'
 
-import type { Dispatch, SetStateAction, MouseEventHandler, ChangeEventHandler } from 'react'
+import type { Dispatch, SetStateAction, MouseEventHandler } from 'react'
 import type { FetchedBlogDTO } from '../../services/blogs'
 
 interface BlogEntryProps {
@@ -17,6 +19,7 @@ interface BlogEntryProps {
 function BlogEntry({blogData, setBlogsData, isLoggedIn}: BlogEntryProps)
 {
 	const [isExpanded, setIsExpanded] = useState(false);
+	const [isLiked, setIsLiked] = useState(false);
 
 	const isBlogSubmittedByLoggedInUser = 
 		isLoggedIn && blogData.user.id === LoginService.getUserData()?.id;
@@ -33,56 +36,78 @@ function BlogEntry({blogData, setBlogsData, isLoggedIn}: BlogEntryProps)
 		}
 	}
 
-	const handleLike:ChangeEventHandler<HTMLInputElement> = async (event) => {
+	const handleLike:MouseEventHandler<HTMLButtonElement> = async (_event) => {
+		const originalIsLiked = isLiked;
 		const originalLikesAmount = blogData.likes;
-		const newLikesAmount = originalLikesAmount + (event.target.checked ? 1 : -1);
+		const newLikesAmount = originalLikesAmount + ( !originalIsLiked ? 1 : -1);
 
 		setBlogsData((prevBlogsData) => prevBlogsData.map((blog) =>
 			blog.id === blogData.id ? {...blog, likes: newLikesAmount} : blog
 		));
 
 		try {
+			setIsLiked(!originalIsLiked);
 			await BlogsService.updateLikes(blogData.id, newLikesAmount);
 		}
 		catch (err) {
 			setBlogsData((prevBlogsData) => prevBlogsData.map((blog) =>
 				blog.id === blogData.id ? {...blog, likes: originalLikesAmount} : blog
 			));
+			setIsLiked(originalIsLiked);
 			console.log('ERROR NOTICE IN BLOG ENTRY LIKING', err);
 		}
 	}
 
 	return (
 		<article className='blog-entry'>
-			<header>
+			<header className='blog-header'>
 				<h2 className='blog-title'>{blogData.title}</h2>
 				<button onClick={() => setIsExpanded((prev) => !prev)}>
 					{isExpanded ? 'Hide' : 'View'}
 				</button>
 			</header>
 
-			<ul>
-				{isExpanded && (
-					<>
-						<BlogEntryInfoRow>
-							<p>{blogData.url}</p>
-						</BlogEntryInfoRow>
+			<ul className={`blog-content${isExpanded ? ' expanded' : ''}`}>
+				<BlogEntryInfoRow>
+					<p>
+						<strong>URL: </strong>
+						{blogData.url}
+					</p>
+				</BlogEntryInfoRow>
 
-						<BlogEntryInfoRow>
-							<p>Likes: <strong>{blogData.likes}</strong></p>
-							{isLoggedIn && <input type='checkbox' onChange={handleLike} />}
-						</BlogEntryInfoRow>
+				<BlogEntryInfoRow>
+					<span className='blog-likes-row'>
+						<p>
+							<strong>Likes: </strong>
+							{blogData.likes}
+						</p>
+						{isLoggedIn && (
+							<button onClick={handleLike} className='like-button'>
+								<img 
+									src={isLiked ? LikeIconLiked : LikeIconUnliked}
+									alt={isLiked ? 'like-button-filled' : 'like-button-unfilled'}
+									className='like-icon'
+								/>
+							</button>
+						)}
+					</span>
+				</BlogEntryInfoRow>
 
-						<BlogEntryInfoRow>
-							<p>{blogData.author}</p>
-						</BlogEntryInfoRow>
+				<BlogEntryInfoRow>
+					<p>
+						<strong>Author: </strong>
+						{blogData.author}
+					</p>
+				</BlogEntryInfoRow>
 
-						<BlogEntryInfoRow>
-							<p>Submitted by {blogData.user.username}</p>
-							{isBlogSubmittedByLoggedInUser && <button onClick={handleUnsubmit}>Unsubmit</button>}
-						</BlogEntryInfoRow>
-					</>
-				)}
+				<BlogEntryInfoRow>
+					<span className='blog-submission-info'>
+						<p>
+							Submitted by <em>{blogData.user.username}</em>
+						</p>
+						{isBlogSubmittedByLoggedInUser && <button onClick={handleUnsubmit}>Unsubmit</button>}
+					</span>
+				</BlogEntryInfoRow>
 			</ul>
 		</article>
 	);

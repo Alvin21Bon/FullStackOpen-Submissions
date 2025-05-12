@@ -12,16 +12,88 @@
 	max-width: 100em;
 }
 
-.blog-entry > header {
+.blog-header {
 	display: flex;
 	align-items: center;
 }
 
-.blog-entry > header > button {
+.blog-header > button {
 	margin-left: auto;
+
 }
 
 .blog-title {
 	text-decoration: underline white solid 3px;
+}
+
+.blog-content {
+	overflow: hidden;
+	max-height: 0;
+	padding: 0;
+	margin: 0;
+
+	transition: max-height 0.1s ease-out;
+
+	list-style: none;
+}
+
+.blog-content.expanded {
+	max-height: 50em;
+	transition: max-height 0.5s ease-out;
+}
+
+.blog-content p {
+	margin: 0;
+	padding: 0;
+	line-height: 2em;
+}
+
+.blog-likes-row {
+	position: relative;
+}
+
+.blog-likes-row * {
+	display: inline;
+}
+
+.like-button {
+	background-color: unset; 
+	border: unset;
+
+	padding: 0; 
+	margin: 0;
+	width: 3em;
+
+	position: absolute;
+	top: 50%;
+	transform: translate(1em, -50%);
+}
+
+.like-button:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.like-icon {
+	max-width: 100%;
+	height: auto;
+	margin: 0;
+	padding: 0;
+}
+
+.blog-submission-info {
+	display: flex;
+	padding-top: 1.5em;
+	align-items: center;
+}
+
+.blog-submission-info > button {
+	margin-left: auto;
+	background-color: #F4442E;
+	margin-left: auto;
+}
+
+.blog-submission-info > button:hover {
+	background-color: #892A1D;
+	color: #EF908A;
 }
 
