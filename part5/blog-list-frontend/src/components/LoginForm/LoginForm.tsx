@@ -3,12 +3,15 @@ import InputField from '../InputField/InputField';
 import LoginService from '../../services/login'
 
 import type { FormEventHandler, Dispatch, SetStateAction } from 'react'
+import type { NotifyFunction } from '../BloglistApp/BloglistApp'
+import type { StandardError } from '../../services/axios';
 
 interface LoginFormProps {
 	setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+	notifyFn: NotifyFunction;
 }
 
-function LoginForm({setIsLoggedIn}: LoginFormProps)
+function LoginForm({setIsLoggedIn, notifyFn}: LoginFormProps)
 {
 	const [usernameInput, setUsernameInput] = useState('');
 	const [passwordInput, setPasswordInput] = useState('');
@@ -30,7 +33,13 @@ function LoginForm({setIsLoggedIn}: LoginFormProps)
 		catch (err) {
 			setUsernameInput('');
 			setPasswordInput('');
-			console.log('ERROR NOTICE IN LOGIN FORM', err);
+
+			const e = err as StandardError;
+			notifyFn(
+				'alert', 
+				`Login Failed: ${e.name}`, 
+				e.message
+			);
 		}
 	}
 

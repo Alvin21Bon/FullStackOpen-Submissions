@@ -1,0 +1,94 @@
+@keyframes slideIn {
+	0% {
+		right: 100vw;
+		opacity: 0;
+	}
+	80% {
+		right: -8px;
+	}
+	100% {
+		right: 0;
+		opacity: 1;
+	}
+}
+
+@keyframes slideOut {
+	0% {
+		right: 0;
+		opacity: 1;
+	}
+	20% {
+		right: -8px;
+	}
+	100% {
+		right: 100vw;
+		opacity: 0;
+	}
+}
+
+.toast {
+	border: 1px solid white;
+
+	width: clamp(20em, 50vw, 30em);
+	max-width: 100%;
+	aspect-ratio: 5 / 1;
+	min-height: 5em;
+
+	margin: 0;
+	padding: 0.2em;
+	border-radius: 20px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	position: relative;
+	animation: 
+		0.2s slideIn ease-out,
+		0.4s slideOut ease-in 7s;
+	animation-fill-mode: forwards;
+}
+
+.toast.status {
+	box-shadow: 0px 0px 14px rgba(0, 255, 0, 0.3);
+	background-color: #04AA6D;
+}
+
+.toast.alert {
+	box-shadow: 0px 0px 14px rgba(255, 0, 0, 0.3);
+	background-color: #F4442E;
+}
+
+.toast-content {
+	color: white;
+	width: 100%;
+	height: 100%;
+
+	margin: 0;
+	padding: 5px 5px;
+}
+
+.toast-content h1,
+.toast-content p {
+	font-size: 0.8em;
+	line-height: 1.5em;
+	margin: 0;
+	padding: 0;
+}
+
+.toast-content h1 {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-bottom: 0.2em;
+}
+
+.toast-content p {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+

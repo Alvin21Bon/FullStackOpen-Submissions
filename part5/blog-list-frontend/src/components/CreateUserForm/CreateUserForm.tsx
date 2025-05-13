@@ -3,8 +3,15 @@ import InputField from '../InputField/InputField';
 import UsersService from '../../services/users'
 
 import type { FormEventHandler } from 'react'
+import type { NotifyFunction } from '../BloglistApp/BloglistApp'
+import type { StandardError } from '../../services/axios'
 
-function CreateUserForm()
+interface CreateUserFormProps {
+	notifyFn: NotifyFunction;
+}
+
+
+function CreateUserForm({notifyFn}: CreateUserFormProps)
 {
 	const [nameInput, setNameInput] = useState('');
 	const [usernameInput, setUsernameInput] = useState('');
@@ -24,9 +31,24 @@ function CreateUserForm()
 			setNameInput('');
 			setUsernameInput('');
 			setPasswordInput('');
+
+			notifyFn(
+				'status', 
+				'User Successfully Created', 
+				`User "${newUser.username}" was successfully created`
+			);
 		}
 		catch (err) {
-			console.log('ERROR NOTICE IN CREATE USER FORM', err);
+			setNameInput('');
+			setUsernameInput('');
+			setPasswordInput('');
+
+			const e = err as StandardError;
+			notifyFn(
+				'alert', 
+				`User "${newUser.username}" Was Unable to be Created: ${e.name}`, 
+				`${e.message}. Perhaps the supplied username is too short`
+			);
 		}
 	}
 

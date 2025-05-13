@@ -1,0 +1,29 @@
+dialog:has(> .confirmation-modal-message) {
+	padding: 0;
+}
+
+.confirmation-modal-heading {
+	background-color: #181C21;
+	border-bottom: 1px solid black;
+
+	overflow: hidden;
+	padding: 0 1em;
+}
+
+.confirmation-modal-message {
+	padding: 0 1em;
+}
+
+.confirmation-modal-buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	gap: 1em;
+	margin: 1em;
+	margin-top: 2em;
+}
+
+.confirmation-modal-cancel-button {
+	background-color: #20242b;
+}
+

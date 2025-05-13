@@ -1,0 +1,34 @@
+dialog {
+	background-color:  #272c35;
+	box-shadow: 0 0px 30px rgba(0, 0, 0, 1);
+	border: none;
+	border-radius: 10px;
+
+	width: 30em;
+	height: fit-content;
+	padding: 2em 5em;
+
+	color: white;
+}
+
+dialog:modal {
+	animation: 0.7s dialog-appear ease-in-out forwards;
+}
+
+dialog::backdrop {
+	backdrop-filter: blur(10px) brightness(0.7); 
+}
+
+@keyframes dialog-appear {
+	0% {
+		display: none;
+		opacity: 0;
+		transform: translateY(20vh);
+	}
+	100% {
+		display: block;
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+

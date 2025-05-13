@@ -11,6 +11,10 @@ body {
 	color: #d2d4d8;
 }
 
+body:has(dialog:modal) {
+	overflow: hidden;
+}
+
 form {
 	border-radius: 5px;
 	background-color: #272c35;
@@ -66,7 +70,6 @@ button {
 }
 
 button:hover {
-	background-color: #026843;
-	color: darkseagreen;
+	filter: brightness(0.8);
 }
 

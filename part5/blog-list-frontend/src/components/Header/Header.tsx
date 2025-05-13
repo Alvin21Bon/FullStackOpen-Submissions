@@ -5,13 +5,15 @@ import CreateUserForm from '../CreateUserForm/CreateUserForm'
 import LoggedInInfo from '../LoggedInInfo/LoggedInInfo'
 
 import type { Dispatch, SetStateAction } from 'react'
+import type { NotifyFunction } from '../BloglistApp/BloglistApp'
 
 interface HeaderProps {
 	isLoggedIn: boolean;
 	setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+	notifyFn: NotifyFunction;
 }
 
-function Header({isLoggedIn, setIsLoggedIn}: HeaderProps)
+function Header({isLoggedIn, setIsLoggedIn, notifyFn}: HeaderProps)
 {
 	return (
 		<>
@@ -20,10 +22,10 @@ function Header({isLoggedIn, setIsLoggedIn}: HeaderProps)
 			) : (
 				<section className='header-forms'>
 					<article>
-						<LoginForm setIsLoggedIn={setIsLoggedIn} />
+						<LoginForm setIsLoggedIn={setIsLoggedIn} notifyFn={notifyFn} />
 					</article>
 					<article>
-						<CreateUserForm />
+						<CreateUserForm notifyFn={notifyFn} />
 					</article>
 				</section>
 			)}

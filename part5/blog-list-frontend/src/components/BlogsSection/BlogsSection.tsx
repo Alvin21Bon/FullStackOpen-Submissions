@@ -6,12 +6,15 @@ import Blogs from '../Blogs/Blogs'
 import BlogsService from '../../services/blogs'
 
 import type { FetchedBlogDTO } from '../../services/blogs'
+import type { NotifyFunction } from '../BloglistApp/BloglistApp'
+import type { StandardError } from '../../services/axios'
 
 interface BlogsSectionProps {
 	isLoggedIn: boolean;
+	notifyFn: NotifyFunction;
 }
 
-function BlogsSection({isLoggedIn}: BlogsSectionProps)
+function BlogsSection({isLoggedIn, notifyFn}: BlogsSectionProps)
 {
 	const [ blogsData, setBlogsData ] = useState<FetchedBlogDTO[]>([]);
 
@@ -22,7 +25,12 @@ function BlogsSection({isLoggedIn}: BlogsSectionProps)
 				setBlogsData(tempBlogs);
 			}
 			catch (err) {
-				console.log("ERROR NOTICE IN BLOGS SECTION", err);
+				const e = err as StandardError;
+				notifyFn(
+					'alert',
+					`Failed to Fetch Bloglist: ${e.name}`,
+					`${e.message}. Try refreshing the page`
+				);
 			}
 		})();
 	}, []);
@@ -30,9 +38,9 @@ function BlogsSection({isLoggedIn}: BlogsSectionProps)
 	return (
 		<section>
 			<h1 className='main-header'>Blogs</h1>
-			{isLoggedIn && <article><SubmitBlogForm setBlogsData={setBlogsData} /></article>}
+			{isLoggedIn && <article><SubmitBlogForm setBlogsData={setBlogsData} notifyFn={notifyFn} /></article>}
 			<section aria-label="Blog List">
-				<Blogs blogsData={blogsData} setBlogsData={setBlogsData} isLoggedIn={isLoggedIn} />
+				<Blogs blogsData={blogsData} setBlogsData={setBlogsData} isLoggedIn={isLoggedIn} notifyFn={notifyFn} />
 			</section>
 		</section>
 	);

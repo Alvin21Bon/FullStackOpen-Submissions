@@ -7,12 +7,15 @@ import LoginService from '../../services/login'
 
 import type { Dispatch, SetStateAction, FormEventHandler } from 'react'
 import type { FetchedBlogDTO } from '../../services/blogs'
+import type { NotifyFunction } from '../BloglistApp/BloglistApp'
+import type { StandardError } from '../../services/axios'
 
 interface SubmitBlogFormProps {
 	setBlogsData: Dispatch<SetStateAction<FetchedBlogDTO[]>>;
+	notifyFn: NotifyFunction;
 }
 
-function SubmitBlogForm({setBlogsData}: SubmitBlogFormProps)
+function SubmitBlogForm({setBlogsData, notifyFn}: SubmitBlogFormProps)
 {
 	const [ isExpanded, setIsExpanded ] = useState(false);
 	const [ titleInput, setTitleInput ] = useState('');
@@ -46,9 +49,20 @@ function SubmitBlogForm({setBlogsData}: SubmitBlogFormProps)
 			setBlogsData((prevBlogsData) => [...prevBlogsData, populatedCreatedBlog]);
 
 			setUnexpanded();
+
+			notifyFn(
+				'status',
+				'Blog Successfully Submitted',
+				`The blog titled "${newBlog.title}" was successfully submitted`
+			);
 		}
 		catch (err) {
-			console.log("ERROR NOTICE IN SUBMIT BLOG FORM", err);
+			const e = err as StandardError;
+			notifyFn(
+				'alert',
+				`Failed to Submit Blog: ${e.name}`,
+				`${e.message}. Try submitting again`
+			);
 		}
 	}
 
@@ -77,7 +91,7 @@ function SubmitBlogForm({setBlogsData}: SubmitBlogFormProps)
 						onChange={(event) => setUrlInput(event.target.value)}
 					/>
 					<div className='submit-button'>
-						<button onClick={setUnexpanded}>Cancel</button>
+						<button type='button' onClick={setUnexpanded}>Cancel</button>
 						<button type='submit'>Submit</button>
 					</div>
 				</form>
